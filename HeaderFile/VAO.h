@@ -5,7 +5,8 @@
 #ifndef OPENGLPROJECT_VAO_H
 #define OPENGLPROJECT_VAO_H
 
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
 #include "VBO.h"
 
 class VAO {

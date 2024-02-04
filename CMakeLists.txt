@@ -3,51 +3,62 @@ project(OpenGLProject)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Find packages
-find_package(OpenGL REQUIRED)
-find_package(GLFW3 REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(glm REQUIRED)
+link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-# Include directories
-include_directories(dependencies)
-include_directories(HeaderFile)
-include_directories(Shaders)
+file(GLOB_RECURSE HEADER_FILES
+        ${CMAKE_SOURCE_DIR}/HeaderFile/*.h
+        ${CMAKE_SOURCE_DIR}/HeaderFile/*.hpp)
 
-# Add subdirectories
-add_subdirectory(dependencies/glad)
-
-# Add executable
-add_executable(${PROJECT_NAME} main.cpp
-        dependencies/glad/src/glad.c
-        Shader.cpp
-        HeaderFile/Shader.h
-        VBO.cpp
-        HeaderFile/VBO.h
-        EBO.cpp
-        HeaderFile/EBO.h
-        VAO.cpp
-        HeaderFile/VAO.h)
+# Find DLLs
+file(GLOB DLLS "${CMAKE_SOURCE_DIR}/dlls/*.dll")
+file(COPY ${DLLS} DESTINATION ${CMAKE_BINARY_DIR})
 
 # Include directories
 include_directories(
-        ${OPENGL_INCLUDE_DIR}
-        ${GLUT_INCLUDE_DIR}
-        ${GLEW_INCLUDE_DIR}
-        ${GLM_INCLUDE_DIR}
-        ${GLFW_INCLUDE_DIR}
-        dependencies/glad/include
+        ${CMAKE_SOURCE_DIR}/HeaderFile
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/Shaders
+        ${CMAKE_SOURCE_DIR}/include/GLFW
+        ${CMAKE_SOURCE_DIR}/include/GLEW
+        ${CMAKE_SOURCE_DIR}/include/GLM
+        ${CMAKE_SOURCE_DIR}/include/KHR
+        ${CMAKE_SOURCE_DIR}/include
 )
 
-# Target link libraries
-target_link_libraries(
-        ${PROJECT_NAME}
-        ${OPENGL_LIBRARIES}
-        ${GLEW_LIBRARY}
-        ${GLM_LIBRARY}
-        glfw
-        glad
-)
+
+# Add executable
+add_executable(${PROJECT_NAME} src/main.cpp
+        src/Shader.cpp
+        HeaderFile/Shader.h
+        src/VBO.cpp
+        HeaderFile/VBO.h
+        src/EBO.cpp
+        HeaderFile/EBO.h
+        src/VAO.cpp
+        HeaderFile/VAO.h
+        HeaderFile/data.h)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
+# Find packages
+set(OpenGL_GL_PREFERENCE "GLVND")
+find_package(OpenGL REQUIRED)
+
+# Find GLFW
+find_package(GLFW3 REQUIRED)
+message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
+
+# Find GLEW
+find_package(GLEW REQUIRED)
+message(STATUS "Found GLEW in ${GLEW_INCLUDE_DIR}")
+
+# Find GLM
+find_package(GLM REQUIRED)
+message(STATUS "Found GLM in ${GLM_INCLUDE_DIR}")
+
+
+# Link libraries
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY})
 
 # Define GL_SILENCE_DEPRECATION to silence deprecation warnings
 target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)

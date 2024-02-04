@@ -1,7 +1,9 @@
 #ifndef OPENGLPROJECT_EBO_H
 #define OPENGLPROJECT_EBO_H
 
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
+
 
 class EBO {
 private:
