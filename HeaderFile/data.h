@@ -9,73 +9,24 @@
 #include <string>
 
 
+const unsigned int SCR_WIDTH = 640;
+const unsigned int SCR_HEIGHT = 480;
 
-GLfloat cubeVertices[] = {
-        // position (x, y, z)   u, v   normal (x, y, z)
-        // Front face (z positive)
-        -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f, 1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f, 1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,   0.0f, 0.0f, 1.0f,
 
-        // Back face (z negative)
-        -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f, 0.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-
-        // Left face (x negative)
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f, 1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-
-        // Right face (x positive)
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,    1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f, 0.0f, 1.0f,    1.0f, 0.0f, 0.0f,
-        0.5f,  0.5f, -0.5f, 1.0f, 1.0f,    1.0f, 0.0f, 0.0f,
-
-        // Top face (y positive)
-        -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f, 1.0f, 1.0f,   0.0f, 1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f, 1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-
-        // Bottom face (y negative)
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f, 0.0f, 0.0f,   0.0f, -1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f, 1.0f, 0.0f,   0.0f, -1.0f, 0.0f
+GLfloat squareVertices[] = {
+        // position (x, y, z)                      color (r, g, b)               texCoord (x, y)
+        -0.5f, -0.5f,0.0f,     1.0f, 0.0f, 0.0f,     0.0f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f,     0.0f, 1.0f, 0.0f,     0.0f, 1.0f, // top left
+        0.5f, 0.5f, 0.0f,      0.0f, 0.0f, 1.0f,     1.0f, 1.0f, // top right
+        0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 0.0f,     1.0f, 0.0f  // bottom right
 };
 
-
-GLuint cubeIndices[] = {
-        // Front face
-        0, 1, 2,
-        2, 3, 0,
-
-        // Back face
-        4, 5, 6,
-        6, 7, 4,
-
-        // Left face
-        8, 9, 10,
-        10, 11, 8,
-
-        // Right face
-        12, 13, 14,
-        14, 15, 12,
-
-        // Top face
-        16, 17, 18,
-        18, 19, 16,
-
-        // Bottom face
-        20, 21, 22,
-        22, 23, 20
+GLuint squareIndices[] = {
+        0, 2, 1,
+        0, 3, 2
 };
 
-GLuint cubeIndicesSize = sizeof(cubeIndices) / sizeof(cubeIndices[0]) / 3;
+GLuint squareIndicesSize = sizeof(squareIndices) / sizeof(squareIndices[0]);
+
 
 #endif //OPENGLPROJECT_DATA_H
