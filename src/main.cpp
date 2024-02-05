@@ -67,12 +67,13 @@ int main(int argc, char** argv) {
     crateTexture.texUnit(shaderProgram, "tex0", 0);
 
     // Camera
-    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
-    camera.AddBarrelDistortion(shaderProgram, glm::vec3(0.0f, 0.0f, 0.0f));
+    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 1.0f));
+    camera.AddRadialDistortion(shaderProgram, glm::vec3(0.0f, 0.5f, 0.0f));
+    camera.AddTangentialDistortion(shaderProgram, glm::vec2(0.0f, 0.0f));
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         // draw triangle
         shaderProgram.Activate();

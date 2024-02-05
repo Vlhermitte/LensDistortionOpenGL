@@ -26,7 +26,5 @@ GLuint squareIndices[] = {
         0, 3, 2
 };
 
-GLuint squareIndicesSize = sizeof(squareIndices) / sizeof(squareIndices[0]);
-
 
 #endif //OPENGLPROJECT_DATA_H

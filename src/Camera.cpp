@@ -17,6 +17,10 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shade
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
 }
 
-void Camera::AddBarrelDistortion(Shader &shader, glm::vec3 distParams) {
-    glUniform3fv(glGetUniformLocation(shader.ID, "barrelDistortionParams"), 1, glm::value_ptr(distParams));
+void Camera::AddRadialDistortion(Shader &shader, glm::vec3 distParams) {
+    glUniform3fv(glGetUniformLocation(shader.ID, "radialDistortionParams"), 1, glm::value_ptr(distParams));
+}
+
+void Camera::AddTangentialDistortion(Shader& shader, glm::vec2 distParams) {
+    glUniform2fv(glGetUniformLocation(shader.ID, "tangentialDistortionParams"), 1, glm::value_ptr(distParams));
 }

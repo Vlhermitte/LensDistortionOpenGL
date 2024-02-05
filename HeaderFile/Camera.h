@@ -34,7 +34,8 @@ public:
     Camera(int width, int height, glm::vec3 position);
     void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
     void Inputs(GLFWwindow* window);
-    void AddBarrelDistortion(Shader& shader, glm::vec3 distParams);
+    void AddRadialDistortion(Shader& shader, glm::vec3 distParams);
+    void AddTangentialDistortion(Shader& shader, glm::vec2 distParams);
 };
 
 
