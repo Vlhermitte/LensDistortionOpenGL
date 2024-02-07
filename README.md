@@ -5,7 +5,7 @@ It uses a simple vertex and fragment shader to simulate the lens distortion effe
 The radial and tangential distortion are computed in the fragment shader.
 
 ## Demo
-![Demo](screenshots/no_distortion.png) ![Demo](screenshots/demo_radial_distortion.png)
+![Demo](Screenshots/no_distortion.png) ![Demo2](Screenshots/demo_radial_distortion.png)
 
 ## Dependencies
 - OpenGL
