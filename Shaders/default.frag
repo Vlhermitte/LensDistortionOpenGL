@@ -5,6 +5,8 @@ out vec4 FragColor;
 in vec3 color;
 in vec2 texCoord;
 
+uniform mat4 modelMatrix;
+
 uniform sampler2D tex0;
 uniform vec3 radialDistortionParams;
 uniform vec2 tangentialDistortionParams;
@@ -29,6 +31,9 @@ void main() {
 
     // Radial distortion
     vec2 uv = (texCoord * 2.0) - 1.0;
+
+
+
     vec2 rdv = RadialDistortion(uv, radialDistortionParams.x, radialDistortionParams.y, radialDistortionParams.z);
     rdv = (rdv + 1.0) / 2.0;
     //rdv = clamp(dv, 0.0, 1.0);
@@ -38,5 +43,5 @@ void main() {
 
     vec2 distortedCoord = rdv + tdv;
 
-    FragColor = texture(tex0, distortedCoord);
+    FragColor = vec4(color, 1.0) * texture(tex0, distortedCoord);
 }

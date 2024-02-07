@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     GLint texCoord = glGetAttribLocation(shaderProgram.ID, "aTexCoord");
 
     VAO.LinkAttrib(VBO, posAttrib, 3, GL_FLOAT,  8 * sizeof(float), (void*)0);
-    // VAO.LinkAttrib(VBO, colorAttrib, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    VAO.LinkAttrib(VBO, colorAttrib, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     VAO.LinkAttrib(VBO, texCoord, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
     VAO.Unbind();
@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
 
         // draw triangle
         shaderProgram.Activate();
+        camera.Inputs(window);
 
         camera.Matrix(60.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 

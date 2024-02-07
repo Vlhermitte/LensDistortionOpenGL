@@ -28,14 +28,16 @@ public:
     int height;
 
     float FoV = 45.0f;
-    float speed = 0.1f;
+    float speed = 0.01f;
     float sensitivity = 100.0f;
+    bool wireframeMode = false;
 
     Camera(int width, int height, glm::vec3 position);
     void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
-    void Inputs(GLFWwindow* window);
     void AddRadialDistortion(Shader& shader, glm::vec3 distParams);
     void AddTangentialDistortion(Shader& shader, glm::vec2 distParams);
+
+    void Inputs(GLFWwindow* window);
 };
 
 

@@ -14,7 +14,7 @@ VAO::VAO() {
     check_error_gl();
 }
 
-void VAO::LinkAttrib(VBO VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void *offset) {
+void VAO::LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void *offset) {
     VBO.Bind();
     glEnableVertexAttribArray(layout);
     glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
