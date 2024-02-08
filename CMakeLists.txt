@@ -40,7 +40,7 @@ add_executable(${PROJECT_NAME} src/main.cpp
         HeaderFile/data.h
         HeaderFile/Camera.h
         src/Camera.cpp
-        src/stb.cpp
+        include/stb/stb.cpp
         src/Texture.cpp
         HeaderFile/Texture.h)
 
