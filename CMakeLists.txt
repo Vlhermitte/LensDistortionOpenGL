@@ -10,9 +10,10 @@ file(GLOB_RECURSE HEADER_FILES
         ${CMAKE_SOURCE_DIR}/HeaderFile/*.hpp)
 
 # Find DLLs
-file(GLOB DLLS "${CMAKE_SOURCE_DIR}/dlls/*.dll")
-file(COPY ${DLLS} DESTINATION ${CMAKE_BINARY_DIR})
-
+if (WIN32)
+    file(GLOB DLLS "${CMAKE_SOURCE_DIR}/dlls/*.dll")
+    file(COPY ${DLLS} DESTINATION ${CMAKE_BINARY_DIR})
+endif ()
 # Include directories
 include_directories(
         ${CMAKE_SOURCE_DIR}/HeaderFile
@@ -63,7 +64,11 @@ message(STATUS "Found GLM in ${GLM_INCLUDE_DIR}")
 
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY})
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY})
+elseif (UNIX)
+    target_link_libraries(${PROJECT_NAME} glfw GLEW GL)
+endif ()
 
 # Define GL_SILENCE_DEPRECATION to silence deprecation warnings
 target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)
