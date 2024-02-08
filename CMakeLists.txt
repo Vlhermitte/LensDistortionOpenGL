@@ -66,8 +66,10 @@ message(STATUS "Found GLM in ${GLM_INCLUDE_DIR}")
 # Link libraries
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY})
-elseif (UNIX)
+elseif (UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME} glfw GLEW GL)
+elseif (APPLE)
+    target_link_libraries(${PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo" glfw GLEW)
 endif ()
 
 # Define GL_SILENCE_DEPRECATION to silence deprecation warnings

@@ -2,7 +2,13 @@
 #define OPENGLPROJECT_VBO_H
 
 #include <GL/glew.h>
-#include <GL/gl.h>
+
+#if defined(__APPLE__)
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
+#else
+    #include <GL/gl.h>
+#endif
 
 
 
