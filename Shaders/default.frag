@@ -4,12 +4,23 @@ out vec4 FragColor;
 
 in vec3 color;
 in vec2 texCoord;
+in vec3 normal;
+in vec3 crntPos;
 
+// Matrices
 uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec3 camPos;
 
+// Distortion and Texture
 uniform sampler2D tex0;
 uniform vec3 radialDistortionParams;
 uniform vec2 tangentialDistortionParams;
+
+// Lighting
+uniform vec3 lightPos;
+uniform vec4 lightColor;
 
 vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
     float r = length(coord);
@@ -31,17 +42,26 @@ void main() {
 
     // Radial distortion
     vec2 uv = (texCoord * 2.0) - 1.0;
-
-
-
     vec2 rdv = RadialDistortion(uv, radialDistortionParams.x, radialDistortionParams.y, radialDistortionParams.z);
     rdv = (rdv + 1.0) / 2.0;
-    //rdv = clamp(dv, 0.0, 1.0);
-
     // Tengential distortion (experimental)
     vec2 tdv = TangentialDistortion(uv, tangentialDistortionParams.x, tangentialDistortionParams.y);
-
     vec2 distortedCoord = rdv + tdv;
 
-    FragColor = vec4(color, 1.0) * texture(tex0, distortedCoord);
+    // lighting
+    float ambient = 0.1;
+
+    // diffuse lighting
+    vec3 normal = normalize(normal);
+    vec3 lightDirection = normalize(lightPos - crntPos);
+    float diffuse = max(dot(normal, lightDirection), 0.0f);
+
+    // specular lighting
+    float specularLight = 0.50f;
+    vec3 viewDirection = normalize(camPos - crntPos);
+    vec3 reflectionDirection = reflect(-lightDirection, normal);
+    float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 8);
+    float specular = specAmount * specularLight;
+
+    FragColor = texture(tex0, distortedCoord) * lightColor * (diffuse + ambient + specular);
 }
