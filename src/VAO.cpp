@@ -5,7 +5,7 @@
 
 VAO::VAO() {
 #if defined(__APPLE__)
-    glGenVertexArrays(1, &ID);
+    glGenVertexArrays(1, &this->ID);
     // glGenVertexArraysAPPLE(1, &ID);
 #endif
 #if defined(_WIN32) || defined(__linux__)
@@ -24,7 +24,7 @@ void VAO::LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type,
 
 void VAO::Bind() const {
 #if defined(__APPLE__)
-    glBindVertexArray(ID);
+    glBindVertexArray(this->ID);
     // glBindVertexArrayAPPLE(ID);
 #endif
 #if defined(_WIN32) || defined(__linux__)
@@ -46,7 +46,7 @@ void VAO::Unbind() {
 
 void VAO::Delete() const {
 #if defined(__APPLE__)
-    glDeleteVertexArrays(1, &ID);
+    glDeleteVertexArrays(1, &this->ID);
     // glDeleteVertexArraysAPPLE(1, &ID);
 #endif
 #if defined(_WIN32) || defined(__linux__)
@@ -80,7 +80,7 @@ void VAO::check_error_gl() const {
                 error = "UNKNOWN";
                 break;
         }
-        std::cerr << "OpenGL Error: " << error << " with VAO: (id=" << ID << ")" << std::endl;
+        std::cerr << "OpenGL Error: " << error << " with VAO: (id=" << this->ID << ")" << std::endl;
     }
 
 }

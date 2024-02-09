@@ -2,10 +2,10 @@
 #include <string>
 #include <iostream>
 
-EBO::EBO(GLuint *indices, GLsizeiptr size) {
+EBO::EBO(std::vector<GLuint>& indices) {
     glGenBuffers(1, &this->ID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
     check_error_gl();
 }
 
@@ -48,6 +48,6 @@ void EBO::check_error_gl() const {
                 error = "UNKNOWN";
                 break;
         }
-        std::cerr << "OpenGL error: " << error << " with EBO: (id=" << ID << ")" << std::endl;
+        std::cerr << "OpenGL error: " << error << " with EBO: (id=" << this->ID << ")" << std::endl;
     }
 }

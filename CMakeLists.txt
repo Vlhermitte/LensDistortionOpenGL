@@ -42,7 +42,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Camera.cpp
         include/stb/stb.cpp
         src/Texture.cpp
-        HeaderFile/Texture.h)
+        HeaderFile/Texture.h
+        src/Mesh.cpp
+        HeaderFile/Mesh.h)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 

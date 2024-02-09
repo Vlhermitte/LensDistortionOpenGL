@@ -2,10 +2,10 @@
 
 out vec4 FragColor;
 
+in vec3 position;
+in vec3 normal;
 in vec3 color;
 in vec2 texCoord;
-in vec3 normal;
-in vec3 crntPos;
 
 // Matrices
 uniform mat4 modelMatrix;
@@ -14,7 +14,8 @@ uniform mat4 projectionMatrix;
 uniform vec3 camPos;
 
 // Distortion and Texture
-uniform sampler2D tex0;
+uniform sampler2D diffuse0;
+uniform sampler2D specular0;
 uniform vec3 radialDistortionParams;
 uniform vec2 tangentialDistortionParams;
 
@@ -45,7 +46,7 @@ vec2 TangentialDistortion(vec2 coord, float p1, float p2) {
 vec4 pointLight() {
 
     // distance from light to fragment
-    float distance = length(lightPos - crntPos);
+    float distance = length(lightPos - position);
     float a = 0.1f;
     float b = 0.064f;
     float attenuation = 1.0f / (1.0f + a * distance + b * pow(distance, 2)); // quadratic attenuation formula
@@ -54,18 +55,19 @@ vec4 pointLight() {
     float ambient = 0.2f;
 
     // diffuse lighting
-    vec3 lightDirection = normalize(lightPos - crntPos);
+    vec3 normal = normalize(normal);
+    vec3 lightDirection = normalize(lightPos - position);
     float diff = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuse = diff * lightColor.rgb * attenuation;
+    float diffuse = max(dot(normal, lightDirection), 0.0f);
 
     // specular lighting
     float specularStrength = 0.5;
-    vec3 viewDir = normalize(camPos - crntPos);
+    vec3 viewDir = normalize(camPos - position);
     vec3 reflectDir = reflect(-lightDirection, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec3 specular = specularStrength * spec * lightColor.rgb * attenuation;
+    float specular = specularStrength * spec;
 
-    return vec4((ambient + diffuse + specular) * color, 1.0);
+    return (texture(diffuse0, texCoord) * (diffuse * attenuation + ambient) + texture(specular0, texCoord).r * specular * attenuation) * lightColor;
 }
 
 // directional light
@@ -74,18 +76,18 @@ vec4 directionalLight() {
     float ambient = 0.2f;
 
     // diffuse lighting
+    vec3 normal = normalize(normal);
     vec3 lightDirection = normalize(vec3(0.0, 0.0, 1.0)); // constant light direction
-    float diff = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuse = diff * lightColor.rgb;
+    float diffuse = max(dot(normal, lightDirection), 0.0);
 
     // specular lighting
     float specularStrength = 0.5;
-    vec3 viewDir = normalize(camPos - crntPos);
+    vec3 viewDir = normalize(camPos - position);
     vec3 reflectDir = reflect(-lightDirection, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec3 specular = specularStrength * spec * lightColor.rgb;
+    float specular = specularStrength * spec;
 
-    return vec4((ambient + diffuse + specular) * color, 1.0);
+    return (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor;
 }
 
 // spot light
@@ -93,35 +95,27 @@ vec4 spotLight() {
     float outerCutOff = 0.90f;
     float innerCutOff = 0.95f;
 
-    // distance from light to fragment
-    float distance = length(lightPos - crntPos);
-    float a = 0.1f;
-    float b = 0.064f;
-    float attenuation = 1.0f / (1.0f + a * distance + b * pow(distance, 2)); // quadratic attenuation formula
-
     // lighting
     float ambient = 0.2f;
 
     // diffuse lighting
-    vec3 lightDirection = normalize(lightPos - crntPos);
-    float diff = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuse = diff * lightColor.rgb * attenuation;
+    vec3 normal = normalize(normal);
+    vec3 lightDirection = normalize(lightPos - position);
+    float diffuse = max(dot(normal, lightDirection), 0.0f);
 
     // specular lighting
     float specularStrength = 0.5;
-    vec3 viewDir = normalize(camPos - crntPos);
+    vec3 viewDir = normalize(camPos - position);
     vec3 reflectDir = reflect(-lightDirection, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec3 specular = specularStrength * spec * lightColor.rgb * attenuation;
+    float specular = specularStrength * spec;
 
     // spotlight
     float theta = dot(lightDirection, normalize(-lightDirection));
     float epsilon = outerCutOff - innerCutOff;
     float intensity = clamp((theta - innerCutOff) / epsilon, 0.0, 1.0);
-    diffuse *= intensity;
-    specular *= intensity;
 
-    return vec4((ambient + diffuse + specular) * color, 1.0);
+    return (texture(diffuse0, texCoord) * (diffuse * intensity + ambient) + texture(specular0, texCoord).r * specular * intensity) * lightColor;
 }
 
 void main() {
@@ -146,5 +140,5 @@ void main() {
         lightResult += spotLight();
     }
 
-    FragColor = texture(tex0, distortedCoord) * lightResult;
+    FragColor = lightResult;
 }

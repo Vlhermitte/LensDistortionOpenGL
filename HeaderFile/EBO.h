@@ -2,6 +2,8 @@
 #define OPENGLPROJECT_EBO_H
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <vector>
 #if defined(__APPLE__)
     #include <OpenGL/gl.h>
     #include <OpenGL/glu.h>
@@ -15,7 +17,7 @@ private:
     void check_error_gl() const;
 public:
     GLuint ID{};
-    EBO(GLuint* indices, GLsizeiptr size);
+    EBO(std::vector<GLuint>& indices);
 
     void Bind() const;
     void Unbind();

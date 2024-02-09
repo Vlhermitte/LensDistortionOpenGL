@@ -2,6 +2,8 @@
 #define OPENGLPROJECT_VBO_H
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <vector>
 
 #if defined(__APPLE__)
     #include <OpenGL/gl.h>
@@ -10,17 +12,22 @@
     #include <GL/gl.h>
 #endif
 
-
+typedef struct vertex {
+    glm::vec3 Position;
+    glm::vec3 Normal;
+    glm::vec3 Color;
+    glm::vec2 TexCoords;
+} Vertex;
 
 class VBO {
 private:
     void check_error_gl() const;
 public:
     GLuint ID;
-    VBO(GLfloat* vertices, GLsizeiptr size);
+    VBO(std::vector<Vertex>& vertices);
 
     void Bind() const;
-    static void Unbind();
+    void Unbind();
     void Delete();
 };
 

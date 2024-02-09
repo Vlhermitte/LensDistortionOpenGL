@@ -4,12 +4,9 @@
 #include <stb/stb_image.h>
 
 #include "Shader.h"
-#include "VBO.h"
-#include "VAO.h"
-#include "EBO.h"
 #include "Camera.h"
 #include "data.h"
-#include "Texture.h"
+#include "Mesh.h"
 
 
 int main(int argc, char** argv) {
@@ -42,43 +39,26 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    // Load planksTextures
+    Texture planksTextures[] {
+            Texture("../Textures/planks/planks.png", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
+            Texture("../Textures/planks/planksSpec.png", "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
+    };
+
     Shader defaultShader("../Shaders/default.vert", "../Shaders/default.frag");
     Shader lightShader("../Shaders/light.vert", "../Shaders/light.frag");
 
-    VAO objectVAO;
-    objectVAO.Bind();
-
-    VBO objectVBO(pyramidVertices, sizeof(pyramidVertices));
-    EBO objectEBO(pyramidIndices, sizeof(pyramidIndices));
-
-    GLint posAttrib = glGetAttribLocation(defaultShader.ID, "aPos");
-    GLint colorAttrib = glGetAttribLocation(defaultShader.ID, "aColor");
-    GLint texCoord = glGetAttribLocation(defaultShader.ID, "aTexCoord");
-    GLint normalAttrib = glGetAttribLocation(defaultShader.ID, "aNormal");
-
-    objectVAO.LinkAttrib(objectVBO, posAttrib, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
-    objectVAO.LinkAttrib(objectVBO, colorAttrib, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-    objectVAO.LinkAttrib(objectVBO, texCoord, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-    objectVAO.LinkAttrib(objectVBO, normalAttrib, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-
-    objectVAO.Unbind();
-    objectVBO.Unbind();
-    objectEBO.Unbind();
+    /// Objects
+    // floor
+    std::vector<Vertex> floorVerts(floorVertices, floorVertices + sizeof(floorVertices) / sizeof(Vertex));
+    std::vector<GLuint> floorInd(floorIndices, floorIndices + sizeof(floorIndices) / sizeof(GLuint));
+    std::vector<Texture> tex(planksTextures, planksTextures + sizeof(planksTextures) / sizeof(Texture));
+    Mesh floor(floorVerts, floorInd, tex);
 
     // Sun
-    VAO sunVAO;
-    sunVAO.Bind();
-
-    VBO sunVBO(sunVertices, sizeof(sunVertices));
-    EBO sunEBO(sunIndices, sizeof(sunIndices));
-
-    GLint sunPosAttrib = glGetAttribLocation(defaultShader.ID, "aPos");
-
-    sunVAO.LinkAttrib(sunVBO, sunPosAttrib, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
-
-    sunVAO.Unbind();
-    sunVBO.Unbind();
-    sunEBO.Unbind();
+    std::vector<Vertex> sunVerts(sunVertices, sunVertices + sizeof(sunVertices) / sizeof(Vertex));
+    std::vector<GLuint> sunInd(sunIndices, sunIndices + sizeof(sunIndices) / sizeof(GLuint));
+    Mesh sun(sunVerts, sunInd, tex);
 
     glm::vec3 objectPos = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::mat4 objectModel = glm::mat4(1.0f);
@@ -89,19 +69,15 @@ int main(int argc, char** argv) {
     glm::mat4 sunModel = glm::mat4(1.0f);
     sunModel = glm::translate(sunModel, sunPos);
 
-    lightShader.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(sunModel));
-    glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
-
     defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniformMatrix4fv(glGetUniformLocation(defaultShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(objectModel));
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
 
-
-    // Texture
-    Texture crateTexture("../Textures/crate.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
-    crateTexture.texUnit(defaultShader, "tex0", 0);
+    lightShader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(sunModel));
+    glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
@@ -137,42 +113,19 @@ int main(int argc, char** argv) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        defaultShader.Activate();
         camera.updateMatrix(60.0f, 0.1f, 100.0f);
         camera.Matrix(defaultShader, "camMatrix");
 
-        // Texture
-        crateTexture.Bind();
+        // Draw objects
+        floor.Draw(defaultShader, camera);
+        sun.Draw(lightShader, camera);
 
-        // Draw Cube
-        objectVAO.Bind();
-        glDrawElements(GL_TRIANGLES, sizeof(cubeIndices) / sizeof(GLuint), GL_UNSIGNED_INT, 0);
-        objectVAO.Unbind();
-
-        crateTexture.Unbind();
-
-        lightShader.Activate();
-        camera.Matrix(lightShader, "camMatrix");
-
-        sunModel = glm::rotate(sunModel, glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
-        glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(sunModel));
-
-        // Draw Sun
-        sunVAO.Bind();
-        glDrawElements(GL_TRIANGLES, sizeof(sunIndices) / sizeof(GLuint), GL_UNSIGNED_INT, 0);
-        sunVAO.Unbind();
-
+        // Swap buffers and GLFW poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    objectVAO.Delete();
-    objectVBO.Delete();
-    objectEBO.Delete();
-    sunVAO.Delete();
-    sunVBO.Delete();
-    sunEBO.Delete();
-    crateTexture.Delete();
+    // Clean up
     defaultShader.Delete();
     lightShader.Delete();
 
