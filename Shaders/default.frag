@@ -77,7 +77,7 @@ vec4 directionalLight() {
 
     // diffuse lighting
     vec3 normal = normalize(normal);
-    vec3 lightDirection = normalize(vec3(0.0, 0.0, 1.0)); // constant light direction
+    vec3 lightDirection = normalize(vec3(1.0, 1.0, 1.0)); // constant light direction
     float diffuse = max(dot(normal, lightDirection), 0.0);
 
     // specular lighting
@@ -111,9 +111,8 @@ vec4 spotLight() {
     float specular = specularStrength * spec;
 
     // spotlight
-    float theta = dot(lightDirection, normalize(-lightDirection));
-    float epsilon = outerCutOff - innerCutOff;
-    float intensity = clamp((theta - innerCutOff) / epsilon, 0.0, 1.0);
+    float theta = dot(vec3(0.0f, -1.0f, 0.0f), -lightDirection);
+    float intensity = clamp((theta - outerCutOff) / (innerCutOff - outerCutOff), 0.0, 1.0);
 
     return (texture(diffuse0, texCoord) * (diffuse * intensity + ambient) + texture(specular0, texCoord).r * specular * intensity) * lightColor;
 }

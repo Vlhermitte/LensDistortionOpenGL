@@ -41,8 +41,8 @@ int main(int argc, char** argv) {
 
     // Load planksTextures
     Texture planksTextures[] {
-            Texture("../Textures/planks/planks.png", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
-            Texture("../Textures/planks/planksSpec.png", "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
+            Texture("../Resources/Textures/planks/planks.png", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
+            Texture("../Resources/Textures/planks/planksSpec.png", "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
     };
 
     Shader defaultShader("../Shaders/default.vert", "../Shaders/default.frag");
@@ -74,6 +74,8 @@ int main(int argc, char** argv) {
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniformMatrix4fv(glGetUniformLocation(defaultShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(objectModel));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), false);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
 
     lightShader.Activate();
     glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(sunModel));
