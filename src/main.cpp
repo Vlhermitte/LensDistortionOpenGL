@@ -48,6 +48,7 @@ int main(int argc, char** argv) {
 
     Shader defaultShader("../Shaders/default.vert", "../Shaders/default.frag");
     Shader lightShader("../Shaders/light.vert", "../Shaders/light.frag");
+    Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag"); // Not used yet
 
     /// Objects
     // floor
@@ -73,13 +74,14 @@ int main(int argc, char** argv) {
     defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), false);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), false);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
+    defaultShader.Deactivate();
 
     lightShader.Activate();
     glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
-
+    lightShader.Deactivate();
 
     // Models
     Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
@@ -90,8 +92,6 @@ int main(int argc, char** argv) {
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
     camera.AddRadialDistortion(defaultShader, glm::vec3(0.0f, 0.3f, 0.0f));
     camera.AddTangentialDistortion(defaultShader, glm::vec2(0.0f, 0.0f));
-
-    glEnable(GL_DEPTH_TEST);
 
     // Time
     float previousTime = 0.0f;

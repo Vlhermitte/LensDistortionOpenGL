@@ -46,7 +46,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Mesh.cpp
         HeaderFile/Mesh.h
         src/Model.cpp
-        HeaderFile/Model.h)
+        HeaderFile/Model.h
+)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 

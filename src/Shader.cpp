@@ -73,6 +73,10 @@ void Shader::Activate() const {
     glUseProgram(ID);
 }
 
+void Shader::Deactivate() const {
+    glUseProgram(0);
+}
+
 void Shader::Delete() const {
     glDeleteProgram(ID);
 }

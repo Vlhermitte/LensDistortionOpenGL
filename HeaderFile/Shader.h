@@ -18,6 +18,7 @@ public:
     GLint ID;
     Shader(const char* vertexPath, const char* fragmentPath);
     void Activate() const;
+    void Deactivate() const;
     void Delete() const;
 };
 
