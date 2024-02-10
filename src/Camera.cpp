@@ -34,6 +34,12 @@ void Camera::AddTangentialDistortion(Shader& shader, glm::vec2 distParams) {
 }
 
 void Camera::Inputs(GLFWwindow *window) {
+    handleMovement(window);
+    handleMouse(window);
+    handleKeyboard(window);
+}
+
+void Camera::handleMovement(GLFWwindow *window) {
     // Player Movements (QUERTY)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         Position += speed * Orientation;
@@ -59,7 +65,9 @@ void Camera::Inputs(GLFWwindow *window) {
     else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE){
         speed = 0.01f;
     }
+}
 
+void Camera::handleMouse(GLFWwindow *window) {
     // Mouse Movements
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         // Hides mouse cursor
@@ -102,7 +110,9 @@ void Camera::Inputs(GLFWwindow *window) {
         // Makes sure the next time the camera looks around it doesn't jump
         firstClick = true;
     }
+}
 
+void Camera::handleKeyboard(GLFWwindow *window) {
     // Escape button
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
@@ -118,5 +128,4 @@ void Camera::Inputs(GLFWwindow *window) {
             wireframeMode = false;
         }
     }
-
 }

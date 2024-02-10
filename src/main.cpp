@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     objectModel = glm::translate(objectModel, objectPos);
 
     glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    glm::vec3 sunPos = glm::vec3(0.5f, 1.0f, 0.5f);
+    glm::vec3 sunPos = glm::vec3(0.5f, 0.5f, 0.5f);
     glm::mat4 sunModel = glm::mat4(1.0f);
     sunModel = glm::translate(sunModel, sunPos);
 
@@ -75,16 +75,15 @@ int main(int argc, char** argv) {
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), false);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
 
     lightShader.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(sunModel));
     glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
 
 
     // Models
     Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
-    raceCar.setPosition(glm::vec3(0.0f, -0.3f, 0.0f));
+    raceCar.setPosition(glm::vec3(0.5f, -0.5f, 0.5f));
     raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
 
     // Camera

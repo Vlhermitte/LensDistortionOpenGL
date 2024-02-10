@@ -19,6 +19,10 @@
 
 
 class Camera {
+private:
+    void handleMovement(GLFWwindow* window);
+    void handleMouse(GLFWwindow* window);
+    void handleKeyboard(GLFWwindow* window);
 public:
     glm::vec3 Position;
     glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
