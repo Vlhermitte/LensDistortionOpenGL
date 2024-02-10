@@ -44,7 +44,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Texture.cpp
         HeaderFile/Texture.h
         src/Mesh.cpp
-        HeaderFile/Mesh.h)
+        HeaderFile/Mesh.h
+        src/Model.cpp
+        HeaderFile/Model.h)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
@@ -64,14 +66,18 @@ message(STATUS "Found GLEW in ${GLEW_INCLUDE_DIR}")
 find_package(GLM REQUIRED)
 message(STATUS "Found GLM in ${GLM_INCLUDE_DIR}")
 
+# Find ASSIMP
+find_package(ASSIMP REQUIRED)
+message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
+
 
 # Link libraries
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY})
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY} assimp)
 elseif (UNIX AND NOT APPLE)
-    target_link_libraries(${PROJECT_NAME} glfw GLEW GL)
+    target_link_libraries(${PROJECT_NAME} glfw GLEW GL assimp)
 elseif (APPLE)
-    target_link_libraries(${PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo" glfw GLEW)
+    target_link_libraries(${PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo" glfw GLEW assimp)
 endif ()
 
 # Define GL_SILENCE_DEPRECATION to silence deprecation warnings

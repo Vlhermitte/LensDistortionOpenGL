@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "data.h"
 #include "Mesh.h"
+#include "Model.h"
 
 
 int main(int argc, char** argv) {
@@ -60,19 +61,18 @@ int main(int argc, char** argv) {
     std::vector<GLuint> sunInd(sunIndices, sunIndices + sizeof(sunIndices) / sizeof(GLuint));
     Mesh sun(sunVerts, sunInd, tex);
 
-    glm::vec3 objectPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 objectPos = glm::vec3(0.0f, -0.5f, 0.0f);
     glm::mat4 objectModel = glm::mat4(1.0f);
     objectModel = glm::translate(objectModel, objectPos);
 
     glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    glm::vec3 sunPos = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 sunPos = glm::vec3(0.5f, 1.0f, 0.5f);
     glm::mat4 sunModel = glm::mat4(1.0f);
     sunModel = glm::translate(sunModel, sunPos);
 
     defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
-    glUniformMatrix4fv(glGetUniformLocation(defaultShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(objectModel));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), false);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
@@ -81,9 +81,15 @@ int main(int argc, char** argv) {
     glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(sunModel));
     glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
 
+
+    // Models
+    Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
+    raceCar.setPosition(glm::vec3(0.0f, -0.3f, 0.0f));
+    raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
+
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
-    camera.AddRadialDistortion(defaultShader, glm::vec3(0.0f, 0.0f, 0.0f));
+    camera.AddRadialDistortion(defaultShader, glm::vec3(0.0f, 0.3f, 0.0f));
     camera.AddTangentialDistortion(defaultShader, glm::vec2(0.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
@@ -118,9 +124,12 @@ int main(int argc, char** argv) {
         camera.updateMatrix(60.0f, 0.1f, 100.0f);
         camera.Matrix(defaultShader, "camMatrix");
 
-        // Draw objects
-        floor.Draw(defaultShader, camera);
-        sun.Draw(lightShader, camera);
+        // Draw Meshes
+        floor.Draw(defaultShader, camera, objectModel);
+        sun.Draw(lightShader, camera, sunModel);
+
+        // Draw models
+        raceCar.Draw(defaultShader, camera);
 
         // Swap buffers and GLFW poll events
         glfwSwapBuffers(window);
