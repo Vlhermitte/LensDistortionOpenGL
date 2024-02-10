@@ -26,6 +26,11 @@ uniform bool usePointLight;
 uniform bool useDirectionalLight;
 uniform bool useSpotLight;
 
+struct Light {
+    float diffuse;
+    float specular;
+};
+
 vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
     float r = length(coord);
     float distortionFactor = 1.0 + k1 * pow(r, 2) + k2 * pow(r, 4) + k3 * pow(r, 6);
@@ -43,8 +48,7 @@ vec2 TangentialDistortion(vec2 coord, float p1, float p2) {
 }
 
 // Point light
-vec4 pointLight() {
-
+Light pointLight() {
     // distance from light to fragment
     float distance = length(lightPos - position);
     float a = 0.1f;
@@ -67,11 +71,12 @@ vec4 pointLight() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     float specular = specularStrength * spec;
 
-    return (texture(diffuse0, texCoord) * (diffuse * attenuation + ambient) + texture(specular0, texCoord).r * specular * attenuation) * lightColor;
+    Light light = Light((diffuse * attenuation + ambient), specular * attenuation);
+    return light;
 }
 
 // directional light
-vec4 directionalLight() {
+Light directionalLight() {
     // lighting
     float ambient = 0.2f;
 
@@ -87,11 +92,12 @@ vec4 directionalLight() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     float specular = specularStrength * spec;
 
-    return (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor;
+    Light light = Light((diffuse + ambient), specular);
+    return light;
 }
 
 // spot light
-vec4 spotLight() {
+Light spotLight() {
     float outerCutOff = 0.90f;
     float innerCutOff = 0.95f;
 
@@ -114,7 +120,8 @@ vec4 spotLight() {
     float theta = dot(vec3(0.0f, -1.0f, 0.0f), -lightDirection);
     float intensity = clamp((theta - outerCutOff) / (innerCutOff - outerCutOff), 0.0, 1.0);
 
-    return (texture(diffuse0, texCoord) * (diffuse * intensity + ambient) + texture(specular0, texCoord).r * specular * intensity) * lightColor;
+    Light light = Light((diffuse * intensity + ambient), specular * intensity);
+    return light;
 }
 
 void main() {
@@ -126,18 +133,26 @@ void main() {
     vec2 tdv = TangentialDistortion(uv, tangentialDistortionParams.x, tangentialDistortionParams.y);
     vec2 distortedCoord = rdv + tdv;
 
-
     // light calculations
-    vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 outputColor = vec4(0.0, 0.0, 0.0, 1.0);
     if (usePointLight) {
-        lightResult += pointLight();
+        Light light = pointLight();
+        outputColor += texture(diffuse0, distortedCoord) * light.diffuse;
+        outputColor += texture(specular0, distortedCoord).r * light.specular;
+        outputColor *= lightColor;
     }
     if (useDirectionalLight) {
-        lightResult += directionalLight();
+        Light light = directionalLight();
+        outputColor += texture(diffuse0, distortedCoord) * light.diffuse;
+        outputColor += texture(specular0, distortedCoord).r * light.specular;
+        outputColor *= lightColor;
     }
     if (useSpotLight) {
-        lightResult += spotLight();
+        Light light = spotLight();
+        outputColor += texture(diffuse0, distortedCoord) * light.diffuse;
+        outputColor += texture(specular0, distortedCoord).r * light.specular;
+        outputColor *= lightColor;
     }
 
-    FragColor = lightResult;
+    FragColor = outputColor;
 }
