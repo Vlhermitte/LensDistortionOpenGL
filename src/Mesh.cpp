@@ -14,6 +14,7 @@ Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vec
 
 void Mesh::setupMesh() {
     meshVAO.Bind();
+    CHECK_GL_ERROR();
     VBO meshVBO(vertices);
     EBO meshEBO(indices);
     meshVAO.LinkAttrib(meshVBO, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0); // aPos
@@ -23,11 +24,13 @@ void Mesh::setupMesh() {
     meshVAO.Unbind();
     meshVBO.Unbind();
     meshEBO.Unbind();
+    CHECK_GL_ERROR();
 }
 
 void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
     shader.Activate();
     meshVAO.Bind();
+    CHECK_GL_ERROR();
 
     unsigned int numDiffuse = 0;
     unsigned int numSpecular = 0;
