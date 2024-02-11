@@ -19,10 +19,10 @@ private:
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    bool loadModel(std::string path);
+    bool loadModel(std::string filename);
     static std::vector<Vertex> getVertices(const aiMesh *mesh);
     static std::vector<GLuint> getIndices(const aiMesh *mesh);
-    static std::vector<Texture> getTextures(const aiMaterial *material);
+    static std::vector<Texture> getTextures(const aiMaterial *material, const std::string &filename);
 public:
     explicit Model(const std::string &path);
 

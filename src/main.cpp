@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
             camera.Inputs(window);
         }
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         camera.updateMatrix(60.0f, 0.1f, 100.0f);

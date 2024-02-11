@@ -26,15 +26,15 @@ void Model::Draw(Shader shader, Camera camera) {
     }
 }
 
-bool Model::loadModel(std::string path) {
+bool Model::loadModel(std::string filename) {
     Assimp::Importer importer;
 
-    std::cout << "Loading model " << path << std::endl;
+    std::cout << "Loading model " << filename << std::endl;
 
     importer.SetPropertyInteger(AI_CONFIG_PP_PTV_NORMALIZE, 1);
 
     const aiScene* scene = importer.ReadFile(
-            path,
+            filename,
             0 |
             aiProcess_Triangulate |
             aiProcess_FlipUVs |
@@ -42,7 +42,7 @@ bool Model::loadModel(std::string path) {
             );
 
     if (scene == nullptr) {
-        std::cerr << "Assimp error loading model " << path << std::endl;
+        std::cerr << "Assimp error loading model " << filename << std::endl;
         return false;
     }
 
@@ -55,7 +55,7 @@ bool Model::loadModel(std::string path) {
 
         std::vector<Vertex> vertices = getVertices(mesh);
         std::vector<GLuint> indices = getIndices(mesh);
-        std::vector<Texture> textures = getTextures(scene->mMaterials[mesh->mMaterialIndex]);
+        std::vector<Texture> textures = getTextures(scene->mMaterials[mesh->mMaterialIndex], filename);
 
         meshes.emplace_back(vertices, indices, textures);
     }
@@ -106,21 +106,34 @@ std::vector<GLuint> Model::getIndices(const aiMesh *mesh) {
 }
 
 // For now, only diffuse and specular textures are supported
-std::vector<Texture> Model::getTextures(const aiMaterial *material) {
+std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::string &fileName) {
     std::vector<Texture> textures;
-    for (int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++) {
-        aiString str;
-        material->GetTexture(aiTextureType_DIFFUSE, i, &str);
-        std::cout << "Diffuse texture " << i << " is " << str.C_Str() << std::endl;
-        Texture texture(str.C_Str(), "diffuse", i, GL_RGBA, GL_UNSIGNED_BYTE);
-        textures.push_back(texture);
+    if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
+        for (int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++) {
+            aiString path;
+            material->GetTexture(aiTextureType_DIFFUSE, i, &path);
+            std::string textureName = path.data;
+            size_t found = fileName.find_last_of("/\\");
+            if (found != std::string::npos) { // If found
+                textureName.insert(0, fileName.substr(0, found + 1));
+            }
+            std::cout << "Loading diffuse file: " << textureName << std::endl;
+            Texture texture(textureName.c_str(), "diffuse", i, GL_RGBA, GL_UNSIGNED_BYTE);
+            textures.push_back(texture);
+        }
+    } else {
+        std::cout << "No diffuse texture" << std::endl;
     }
-    for (int i = 0; i < material->GetTextureCount(aiTextureType_SPECULAR); i++) {
-        aiString str;
-        material->GetTexture(aiTextureType_SPECULAR, i, &str);
-        std::cout << "Specular texture " << i << " is " << str.C_Str() << std::endl;
-        Texture texture(str.C_Str(), "specular", i, GL_RED, GL_UNSIGNED_BYTE);
-        textures.push_back(texture);
+    if (material->GetTextureCount(aiTextureType_SPECULAR) != 0) {
+        for (int i = 0; i < material->GetTextureCount(aiTextureType_SPECULAR); i++) {
+            aiString str;
+            material->GetTexture(aiTextureType_SPECULAR, i, &str);
+            std::cout << "Specular texture " << i << " is " << str.C_Str() << std::endl;
+            Texture texture(str.C_Str(), "specular", i, GL_RED, GL_UNSIGNED_BYTE);
+            textures.push_back(texture);
+        }
+    } else {
+        std::cout << "No specular texture" << std::endl;
     }
     return textures;
 }
