@@ -24,7 +24,7 @@ private:
     void check_error_gl() const;
 public:
     GLuint ID;
-    VBO(std::vector<Vertex>& vertices);
+    explicit VBO(std::vector<Vertex>& vertices);
 
     void Bind() const;
     void Unbind();

@@ -9,6 +9,16 @@
 #include "Mesh.h"
 #include "Model.h"
 
+std::vector<Model> initModels() {
+    std::vector<Model> models;
+    // RaceCar
+    Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
+    raceCar.setPosition(glm::vec3(0.5f, -0.5f, 0.5f));
+    raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
+    models.emplace_back(raceCar);
+
+    return models;
+}
 
 int main(int argc, char** argv) {
 
@@ -74,9 +84,9 @@ int main(int argc, char** argv) {
     defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), false);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), true);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), false);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
     defaultShader.Deactivate();
 
     lightShader.Activate();
@@ -84,9 +94,7 @@ int main(int argc, char** argv) {
     lightShader.Deactivate();
 
     // Models
-    Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
-    raceCar.setPosition(glm::vec3(0.5f, -0.5f, 0.5f));
-    raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
+    std::vector<Model> models = initModels();
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
@@ -128,7 +136,9 @@ int main(int argc, char** argv) {
         sun.Draw(lightShader, camera, sunModel);
 
         // Draw models
-        raceCar.Draw(defaultShader, camera);
+        for (auto & model : models) {
+            model.Draw(defaultShader, camera);
+        }
 
         // Swap buffers and GLFW poll events
         glfwSwapBuffers(window);
