@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     std::vector<Model> models = initModels();
 
     // Camera
-    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
+    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
     camera.AddRadialDistortion(defaultShader, glm::vec3(0.0f, 0.3f, 0.0f));
     camera.AddTangentialDistortion(defaultShader, glm::vec2(0.0f, 0.0f));
 
