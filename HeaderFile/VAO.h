@@ -13,10 +13,9 @@
     #include <GL/gl.h>
 #endif
 #include "VBO.h"
+#include "macro.h"
 
 class VAO {
-private:
-    void check_error_gl() const;
 public:
     GLuint ID;
     VAO();

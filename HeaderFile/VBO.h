@@ -12,6 +12,8 @@
     #include <GL/gl.h>
 #endif
 
+#include "macro.h"
+
 typedef struct vertex {
     glm::vec3 Position;
     glm::vec3 Normal;
@@ -20,8 +22,6 @@ typedef struct vertex {
 } Vertex;
 
 class VBO {
-private:
-    void check_error_gl() const;
 public:
     GLuint ID;
     explicit VBO(std::vector<Vertex>& vertices);

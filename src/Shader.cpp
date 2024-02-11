@@ -71,12 +71,15 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
 void Shader::Activate() const {
     glUseProgram(ID);
+    CHECK_GL_ERROR();
 }
 
 void Shader::Deactivate() const {
     glUseProgram(0);
+    CHECK_GL_ERROR();
 }
 
 void Shader::Delete() const {
     glDeleteProgram(ID);
+    CHECK_GL_ERROR();
 }

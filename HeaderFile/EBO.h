@@ -11,10 +11,9 @@
     #include <GL/gl.h>
 #endif
 
+#include "macro.h"
 
 class EBO {
-private:
-    void check_error_gl() const;
 public:
     GLuint ID{};
     EBO(std::vector<GLuint>& indices);
