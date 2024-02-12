@@ -21,26 +21,25 @@
 
 class Camera {
 private:
-    void handleMovement(GLFWwindow* window);
-    void handleMouse(GLFWwindow* window);
-    void handleKeyboard(GLFWwindow* window);
-public:
     glm::vec3 Position{};
     glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 UpVector = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 cameraMatrix = glm::mat4(1.0f);
-
-    // Prevents the camera from jumping around when first clicking left click
-    bool firstClick = true;
-
+    glm::vec3 radialDistortionParams = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec2 tangentialDistortionParams = glm::vec2(0.0f, 0.0f);
     int width;
     int height;
     float FOVdeg{};
-
+    // Prevents the camera from jumping around when first clicking left click
+    bool firstClick = true;
     float speed = 0.01f;
     float sensitivity = 100.0f;
     bool wireframeMode = false;
 
+    void handleMovement(GLFWwindow* window);
+    void handleMouse(GLFWwindow* window);
+    void handleKeyboard(GLFWwindow* window);
+public:
     Camera(int width, int height, glm::vec3 position);
     void updateMatrix(float FOVdeg, float nearPlane, float farPlane);
     void Matrix(Shader& shader, const char* uniform);

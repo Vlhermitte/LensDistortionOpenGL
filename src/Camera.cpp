@@ -34,11 +34,13 @@ void Camera::Matrix(Shader& shader, const char* uniform) {
 }
 
 void Camera::AddRadialDistortion(Shader &shader, glm::vec3 distParams) {
+    radialDistortionParams = distParams;
     shader.Activate();
     glUniform3fv(glGetUniformLocation(shader.ID, "radialDistortionParams"), 1, glm::value_ptr(distParams));
 }
 
 void Camera::AddTangentialDistortion(Shader& shader, glm::vec2 distParams) {
+    tangentialDistortionParams = distParams;
     shader.Activate();
     glUniform2fv(glGetUniformLocation(shader.ID, "tangentialDistortionParams"), 1, glm::value_ptr(distParams));
 }
@@ -144,7 +146,7 @@ void Camera::handleKeyboard(GLFWwindow *window) {
         int windowsWidth, windowHeight;
         glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
         unsigned char *data = new unsigned char[3 * windowsWidth * windowHeight];
-        glReadPixels(0, 0, windowsWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glReadPixels(0, 0, windowsWidth, windowHeight, GL_BGR, GL_UNSIGNED_BYTE, data);
         cv::Mat image(windowHeight, windowsWidth, CV_8UC3, data);
         cv::flip(image, image, 0);
 
@@ -155,10 +157,17 @@ void Camera::handleKeyboard(GLFWwindow *window) {
         float fx = (windowsWidth) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
         float fy = (windowHeight) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
         cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) << fx, 0, windowsWidth / 2, 0, fy, windowHeight / 2, 0, 0, 1);
-        cv::Mat distCoeffs = (cv::Mat_<double>(5, 1) << 0.0, 0.2, 0.0, 0.0, 0.0);
+        // get the distortion coefficients from the camera
+        cv::Mat distCoeffs = (cv::Mat_<double>(5, 1) <<
+                radialDistortionParams.x,
+                radialDistortionParams.y,
+                radialDistortionParams.z,
+                tangentialDistortionParams.x,
+                tangentialDistortionParams.y
+                );
         cv::undistort(image, undistorted, cameraMatrix, distCoeffs);
         // fit the image to the window
-        cv::resize(undistorted, undistorted, cv::Size(800, 600));
+        cv::resize(undistorted, undistorted, cv::Size(this->width, this->height));
         cv::imwrite("../Screenshots/screenshot.png", undistorted);
 
         delete[] data;
