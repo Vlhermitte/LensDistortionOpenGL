@@ -61,7 +61,6 @@ Light pointLight() {
     // diffuse lighting
     vec3 normal = normalize(normal);
     vec3 lightDirection = normalize(lightPos - position);
-    float diff = max(dot(normal, lightDirection), 0.0);
     float diffuse = max(dot(normal, lightDirection), 0.0f);
 
     // specular lighting
