@@ -21,9 +21,11 @@
 
 class Camera {
 private:
-    glm::vec3 Position{};
+
     glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 UpVector = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::mat4 viewMatrix = glm::mat4(1.0f);
+    glm::mat4 projectionMatrix = glm::mat4(1.0f);
     glm::mat4 cameraMatrix = glm::mat4(1.0f);
     glm::vec3 radialDistortionParams = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec2 tangentialDistortionParams = glm::vec2(0.0f, 0.0f);
@@ -45,6 +47,8 @@ public:
     void Matrix(Shader& shader, const char* uniform);
     void AddRadialDistortion(Shader& shader, glm::vec3 distParams);
     void AddTangentialDistortion(Shader& shader, glm::vec2 distParams);
+
+    glm::vec3 Position{};
 
     void Inputs(GLFWwindow* window);
 };

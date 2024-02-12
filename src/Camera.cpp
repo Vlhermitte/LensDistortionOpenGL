@@ -15,21 +15,21 @@ Camera::Camera(int width, int height, glm::vec3 position) {
 void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
     // Initializes matrices since otherwise they will be the null matrix
     this->FOVdeg = FOVdeg;
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
 
     // Makes camera look in the right direction from the right position
-    view = glm::lookAt(Position, Position + Orientation, UpVector);
+    viewMatrix = glm::lookAt(Position, Position + Orientation, UpVector);
     // Adds perspective to the scene
-    projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
+    projectionMatrix = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
     // Sets new camera matrix
-    cameraMatrix = projection * view;
+    cameraMatrix = projectionMatrix * viewMatrix;
 }
 
 void Camera::Matrix(Shader& shader, const char* uniform) {
     // Exports camera matrix
     shader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 }
 
@@ -37,12 +37,14 @@ void Camera::AddRadialDistortion(Shader &shader, glm::vec3 distParams) {
     radialDistortionParams = distParams;
     shader.Activate();
     glUniform3fv(glGetUniformLocation(shader.ID, "radialDistortionParams"), 1, glm::value_ptr(distParams));
+    shader.Deactivate();
 }
 
 void Camera::AddTangentialDistortion(Shader& shader, glm::vec2 distParams) {
     tangentialDistortionParams = distParams;
     shader.Activate();
     glUniform2fv(glGetUniformLocation(shader.ID, "tangentialDistortionParams"), 1, glm::value_ptr(distParams));
+    shader.Deactivate();
 }
 
 void Camera::Inputs(GLFWwindow *window) {
