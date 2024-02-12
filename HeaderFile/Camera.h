@@ -14,6 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <opencv4/opencv2/opencv.hpp>
 
 #include "Shader.h"
 
@@ -24,7 +25,7 @@ private:
     void handleMouse(GLFWwindow* window);
     void handleKeyboard(GLFWwindow* window);
 public:
-    glm::vec3 Position;
+    glm::vec3 Position{};
     glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 UpVector = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 cameraMatrix = glm::mat4(1.0f);
@@ -34,6 +35,7 @@ public:
 
     int width;
     int height;
+    float FOVdeg{};
 
     float speed = 0.01f;
     float sensitivity = 100.0f;

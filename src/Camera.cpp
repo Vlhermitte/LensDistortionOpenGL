@@ -1,4 +1,10 @@
 #include "Camera.h"
+// if data is not included, include it
+#ifndef OPENGLPROJECT_DATA_H
+#define OPENGLPROJECT_DATA_H
+#include "data.h"
+#endif
+
 
 Camera::Camera(int width, int height, glm::vec3 position) {
     Position = position;
@@ -8,6 +14,7 @@ Camera::Camera(int width, int height, glm::vec3 position) {
 
 void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
     // Initializes matrices since otherwise they will be the null matrix
+    this->FOVdeg = FOVdeg;
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
@@ -130,5 +137,30 @@ void Camera::handleKeyboard(GLFWwindow *window) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             wireframeMode = false;
         }
+    }
+
+    // Get image from OpenGL and use it with OpenCV
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        int windowsWidth, windowHeight;
+        glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
+        unsigned char *data = new unsigned char[3 * windowsWidth * windowHeight];
+        glReadPixels(0, 0, windowsWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
+        cv::Mat image(windowHeight, windowsWidth, CV_8UC3, data);
+        cv::flip(image, image, 0);
+
+        // Apply radial distortion
+        cv::Mat undistorted;
+
+        // Set fx and fy using FOV
+        float fx = (windowsWidth) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
+        float fy = (windowHeight) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
+        cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) << fx, 0, windowsWidth / 2, 0, fy, windowHeight / 2, 0, 0, 1);
+        cv::Mat distCoeffs = (cv::Mat_<double>(5, 1) << 0.0, 0.2, 0.0, 0.0, 0.0);
+        cv::undistort(image, undistorted, cameraMatrix, distCoeffs);
+        // fit the image to the window
+        cv::resize(undistorted, undistorted, cv::Size(800, 600));
+        cv::imwrite("../Screenshots/screenshot.png", undistorted);
+
+        delete[] data;
     }
 }

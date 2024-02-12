@@ -72,14 +72,18 @@ message(STATUS "Found GLM in ${GLM_INCLUDE_DIR}")
 find_package(ASSIMP REQUIRED)
 message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
 
+# Find OpenCV
+find_package(OpenCV REQUIRED)
+message(STATUS "Found OpenCV in ${OpenCV_INCLUDE_DIR}")
+
 
 # Link libraries
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY} assimp)
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY} assimp ${OpenCV_LIBS})
 elseif (UNIX AND NOT APPLE)
-    target_link_libraries(${PROJECT_NAME} glfw GLEW GL assimp)
+    target_link_libraries(${PROJECT_NAME} glfw GLEW GL assimp ${OpenCV_LIBS})
 elseif (APPLE)
-    target_link_libraries(${PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo" glfw GLEW assimp)
+    target_link_libraries(${PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo" glfw GLEW assimp ${OpenCV_LIBS})
 endif ()
 
 # Define GL_SILENCE_DEPRECATION to silence deprecation warnings
