@@ -8,6 +8,7 @@ layout (location = 3) in vec2 aTexCoord;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+uniform mat4 normalMatrix;
 uniform mat4 camMatrix; // view * projection
 
 out vec3 position;
@@ -18,9 +19,9 @@ out vec2 texCoord;
 void main() {
     color = aColor;
     texCoord = aTexCoord;
-    normal = aNormal;
+    normal = normalize(vec3(normalMatrix * vec4(aNormal, 0.0)));
 
     // current position
     position = vec3(modelMatrix * vec4(aPos, 1.0f));
-    gl_Position = camMatrix * vec4(position, 1.0);
+    gl_Position = camMatrix * vec4(position, 1.0); // PVM * aPos
 }
