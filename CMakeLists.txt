@@ -28,7 +28,7 @@ include_directories(
 
 
 # Add executable
-add_executable(${PROJECT_NAME} src/main.cpp
+add_executable(${PROJECT_NAME} src/main.cpp HeaderFile/main.h
         src/Shader.cpp
         HeaderFile/Shader.h
         src/VBO.cpp
@@ -48,6 +48,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Model.cpp
         HeaderFile/Model.h
         HeaderFile/macro.h
+        src/Skybox.cpp
+        HeaderFile/Skybox.h
+
 )
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")

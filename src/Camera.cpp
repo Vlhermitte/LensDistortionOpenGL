@@ -47,6 +47,14 @@ void Camera::AddTangentialDistortion(Shader& shader, glm::vec2 distParams) {
     shader.Deactivate();
 }
 
+glm::mat4 Camera::GetViewMatrix() {
+    return viewMatrix;
+}
+
+glm::mat4 Camera::GetProjectionMatrix() {
+    return projectionMatrix;
+}
+
 void Camera::Inputs(GLFWwindow *window) {
     handleMovement(window);
     handleMouse(window);

@@ -21,7 +21,6 @@
 
 class Camera {
 private:
-
     glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 UpVector = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 viewMatrix = glm::mat4(1.0f);
@@ -42,13 +41,15 @@ private:
     void handleMouse(GLFWwindow* window);
     void handleKeyboard(GLFWwindow* window);
 public:
+    glm::vec3 Position{};
     Camera(int width, int height, glm::vec3 position);
     void updateMatrix(float FOVdeg, float nearPlane, float farPlane);
     void Matrix(Shader& shader, const char* uniform);
     void AddRadialDistortion(Shader& shader, glm::vec3 distParams);
     void AddTangentialDistortion(Shader& shader, glm::vec2 distParams);
 
-    glm::vec3 Position{};
+    glm::mat4 GetViewMatrix();
+    glm::mat4 GetProjectionMatrix();
 
     void Inputs(GLFWwindow* window);
 };

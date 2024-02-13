@@ -1,14 +1,4 @@
-#include <iostream>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <stb/stb_image.h>
-#include <opencv4/opencv2/opencv.hpp>
-
-#include "Shader.h"
-#include "Camera.h"
-#include "data.h"
-#include "Mesh.h"
-#include "Model.h"
+#include "main.h"
 
 std::vector<Model> initModels() {
     std::vector<Model> models;
@@ -19,6 +9,21 @@ std::vector<Model> initModels() {
     models.emplace_back(raceCar);
 
     return models;
+}
+
+Skybox initSkybox() {
+    std::vector<std::string> faces {
+            "../Resources/Textures/Skybox/sh_posx.jpg",
+            "../Resources/Textures/Skybox/sh_negx.jpg",
+            "../Resources/Textures/Skybox/sh_posy.jpg",
+            "../Resources/Textures/Skybox/sh_negy.jpg",
+            "../Resources/Textures/Skybox/sh_posz.jpg",
+            "../Resources/Textures/Skybox/sh_negz.jpg"
+    };
+
+    std::vector<Vertex> skyboxVerts(skyboxVertices, skyboxVertices + sizeof(skyboxVertices) / sizeof(Vertex));
+    std::vector<GLuint> skyboxInds(skyboxIndices, skyboxIndices + sizeof(skyboxIndices) / sizeof(GLuint));
+    return Skybox(faces, skyboxVerts, skyboxInds);
 }
 
 int main(int argc, char** argv) {
@@ -59,6 +64,7 @@ int main(int argc, char** argv) {
 
     Shader defaultShader("../Shaders/default.vert", "../Shaders/default.frag");
     Shader lightShader("../Shaders/light.vert", "../Shaders/light.frag");
+    Shader skyboxShader("../Shaders/skybox.vert", "../Shaders/skybox.frag");
     Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag"); // Not used yet
 
     /// Objects
@@ -94,6 +100,8 @@ int main(int argc, char** argv) {
     glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     lightShader.Deactivate();
 
+    // Skybox
+    Skybox skybox = initSkybox();
     // Models
     std::vector<Model> models = initModels();
 
@@ -130,6 +138,9 @@ int main(int argc, char** argv) {
 
         camera.updateMatrix(60.0f, 0.1f, 100.0f);
         camera.Matrix(defaultShader, "camMatrix");
+
+        // Draw Skybox
+        skybox.Draw(skyboxShader, camera);
 
         // Draw Meshes
         floor.Draw(defaultShader, camera, objectModel);
