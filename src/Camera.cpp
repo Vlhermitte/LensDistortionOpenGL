@@ -1,4 +1,10 @@
 #include "Camera.h"
+// if data is not included, include it
+#ifndef OPENGLPROJECT_DATA_H
+#define OPENGLPROJECT_DATA_H
+#include "data.h"
+#endif
+
 
 Camera::Camera(int width, int height, glm::vec3 position) {
     Position = position;
@@ -8,32 +14,37 @@ Camera::Camera(int width, int height, glm::vec3 position) {
 
 void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
     // Initializes matrices since otherwise they will be the null matrix
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
+    this->FOVdeg = FOVdeg;
 
     // Makes camera look in the right direction from the right position
-    view = glm::lookAt(Position, Position + Orientation, UpVector);
+    viewMatrix = glm::lookAt(Position, Position + Orientation, UpVector);
     // Adds perspective to the scene
-    projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
+    projectionMatrix = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
     // Sets new camera matrix
-    cameraMatrix = projection * view;
+    cameraMatrix = projectionMatrix * viewMatrix;
 }
 
 void Camera::Matrix(Shader& shader, const char* uniform) {
     // Exports camera matrix
     shader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 }
 
 void Camera::AddRadialDistortion(Shader &shader, glm::vec3 distParams) {
+    radialDistortionParams = distParams;
     shader.Activate();
     glUniform3fv(glGetUniformLocation(shader.ID, "radialDistortionParams"), 1, glm::value_ptr(distParams));
+    shader.Deactivate();
 }
 
 void Camera::AddTangentialDistortion(Shader& shader, glm::vec2 distParams) {
+    tangentialDistortionParams = distParams;
     shader.Activate();
     glUniform2fv(glGetUniformLocation(shader.ID, "tangentialDistortionParams"), 1, glm::value_ptr(distParams));
+    shader.Deactivate();
 }
 
 void Camera::Inputs(GLFWwindow *window) {
@@ -130,5 +141,37 @@ void Camera::handleKeyboard(GLFWwindow *window) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             wireframeMode = false;
         }
+    }
+
+    // Get image from OpenGL and use it with OpenCV
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        int windowsWidth, windowHeight;
+        glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
+        unsigned char *data = new unsigned char[3 * windowsWidth * windowHeight];
+        glReadPixels(0, 0, windowsWidth, windowHeight, GL_BGR, GL_UNSIGNED_BYTE, data);
+        cv::Mat image(windowHeight, windowsWidth, CV_8UC3, data);
+        cv::flip(image, image, 0);
+
+        // Apply radial distortion
+        cv::Mat undistorted;
+
+        // Set fx and fy using FOV
+        float fx = (windowsWidth) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
+        float fy = (windowHeight) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
+        cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) << fx, 0, windowsWidth / 2, 0, fy, windowHeight / 2, 0, 0, 1);
+        // get the distortion coefficients from the camera
+        cv::Mat distCoeffs = (cv::Mat_<double>(5, 1) <<
+                radialDistortionParams.x,
+                radialDistortionParams.y,
+                radialDistortionParams.z,
+                tangentialDistortionParams.x,
+                tangentialDistortionParams.y
+                );
+        cv::undistort(image, undistorted, cameraMatrix, distCoeffs);
+        // fit the image to the window
+        cv::resize(undistorted, undistorted, cv::Size(this->width, this->height));
+        cv::imwrite("../Screenshots/screenshot.png", undistorted);
+
+        delete[] data;
     }
 }

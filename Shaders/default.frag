@@ -32,13 +32,14 @@ struct Light {
 };
 
 vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
+    // NOT USED ANYMORE
     float r = length(coord);
     float distortionFactor = 1.0 + k1 * pow(r, 2) + k2 * pow(r, 4) + k3 * pow(r, 6);
     return distortionFactor * coord;
 }
 
 vec2 TangentialDistortion(vec2 coord, float p1, float p2) {
-    // EXPERIMENTAL - MIGHT BE WRONG
+    // NOT USED ANYMORE
     float x = coord.x;
     float y = coord.y;
     float r2 = x * x + y * y;
@@ -61,7 +62,6 @@ Light pointLight() {
     // diffuse lighting
     vec3 normal = normalize(normal);
     vec3 lightDirection = normalize(lightPos - position);
-    float diff = max(dot(normal, lightDirection), 0.0);
     float diffuse = max(dot(normal, lightDirection), 0.0f);
 
     // specular lighting
@@ -125,6 +125,7 @@ Light spotLight() {
 }
 
 void main() {
+    /* NOT USED ANYMORE
     // Radial distortion
     vec2 uv = (texCoord * 2.0) - 1.0;
     vec2 rdv = RadialDistortion(uv, radialDistortionParams.x, radialDistortionParams.y, radialDistortionParams.z);
@@ -132,25 +133,26 @@ void main() {
     // Tengential distortion (experimental)
     vec2 tdv = TangentialDistortion(uv, tangentialDistortionParams.x, tangentialDistortionParams.y);
     vec2 distortedCoord = rdv + tdv;
+    */
 
     // light calculations
     vec4 outputColor = vec4(0.0, 0.0, 0.0, 1.0);
     if (usePointLight) {
         Light light = pointLight();
-        outputColor += texture(diffuse0, distortedCoord) * light.diffuse;
-        outputColor += texture(specular0, distortedCoord).r * light.specular;
+        outputColor += texture(diffuse0, texCoord) * light.diffuse;
+        outputColor += texture(specular0, texCoord).r * light.specular;
         outputColor *= lightColor;
     }
     if (useDirectionalLight) {
         Light light = directionalLight();
-        outputColor += texture(diffuse0, distortedCoord) * light.diffuse;
-        outputColor += texture(specular0, distortedCoord).r * light.specular;
+        outputColor += texture(diffuse0, texCoord) * light.diffuse;
+        outputColor += texture(specular0, texCoord).r * light.specular;
         outputColor *= lightColor;
     }
     if (useSpotLight) {
         Light light = spotLight();
-        outputColor += texture(diffuse0, distortedCoord) * light.diffuse;
-        outputColor += texture(specular0, distortedCoord).r * light.specular;
+        outputColor += texture(diffuse0, texCoord) * light.diffuse;
+        outputColor += texture(specular0, texCoord).r * light.specular;
         outputColor *= lightColor;
     }
 
