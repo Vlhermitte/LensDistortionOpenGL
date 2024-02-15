@@ -16,6 +16,13 @@
 #include "Texture.h"
 #include "macro.h"
 
+typedef struct material {      // structure that describes currently used material
+    glm::vec3  ambient;       // ambient component
+    glm::vec3  diffuse;       // diffuse component
+    glm::vec3  specular;      // specular component
+    float shininess;     // sharpness of specular reflection
+    bool  useTexture;    // defines whether the texture is used or not
+} Material;
 
 class Mesh {
 private:
@@ -24,6 +31,7 @@ public:
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
+    Material material;
 
     VAO meshVAO;
 

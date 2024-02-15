@@ -56,6 +56,7 @@ bool Model::loadModel(std::string filename) {
         std::vector<Vertex> vertices = getVertices(mesh);
         std::vector<GLuint> indices = getIndices(mesh);
         std::vector<Texture> textures = getTextures(scene->mMaterials[mesh->mMaterialIndex], filename);
+        Material material = getMaterials(scene->mMaterials[mesh->mMaterialIndex]);
 
         meshes.emplace_back(vertices, indices, textures);
     }
@@ -118,7 +119,7 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::s
                 textureName.insert(0, fileName.substr(0, found + 1));
             }
             std::cout << "Loading diffuse file: " << textureName << std::endl;
-            Texture texture(textureName.c_str(), "diffuse", i, GL_RGBA, GL_UNSIGNED_BYTE);
+            Texture texture(textureName.c_str(), "diffuse", i);
             textures.push_back(texture);
         }
     } else {
@@ -126,14 +127,39 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::s
     }
     if (material->GetTextureCount(aiTextureType_SPECULAR) != 0) {
         for (int i = 0; i < material->GetTextureCount(aiTextureType_SPECULAR); i++) {
-            aiString str;
-            material->GetTexture(aiTextureType_SPECULAR, i, &str);
-            std::cout << "Specular texture " << i << " is " << str.C_Str() << std::endl;
-            Texture texture(str.C_Str(), "specular", i, GL_RED, GL_UNSIGNED_BYTE);
+            aiString path;
+            material->GetTexture(aiTextureType_SPECULAR, i, &path);
+            std::string textureName = path.data;
+            size_t found = fileName.find_last_of("/\\");
+            if (found != std::string::npos) { // If found
+                textureName.insert(0, fileName.substr(0, found + 1));
+            }
+            std::cout << "Loading diffuse file: " << textureName << std::endl;
+            Texture texture(textureName.c_str(), "specular", i);
             textures.push_back(texture);
         }
     } else {
         std::cout << "No specular texture" << std::endl;
     }
     return textures;
+}
+
+Material Model::getMaterials(const aiMaterial *material) {
+    Material mat;
+    aiColor3D color(0.f, 0.f, 0.f);
+    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_AMBIENT, color)) {
+        mat.ambient = glm::vec3(color.r, color.g, color.b);
+    }
+    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
+        mat.diffuse = glm::vec3(color.r, color.g, color.b);
+    }
+    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, color)) {
+        mat.specular = glm::vec3(color.r, color.g, color.b);
+    }
+    float shininess;
+    if (AI_SUCCESS == material->Get(AI_MATKEY_SHININESS, shininess)) {
+        mat.shininess = shininess;
+    }
+    mat.useTexture = false;
+    return mat;
 }

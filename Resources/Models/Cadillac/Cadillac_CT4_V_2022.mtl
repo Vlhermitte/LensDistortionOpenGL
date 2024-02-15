@@ -1,0 +1,14 @@
+# Blender 4.0.2 MTL File: 'Cadillac_CT4_V_2022.blend'
+# www.blender.org
+
+newmtl blinn1
+Ka 0.469512 0.469512 0.469512
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd Maps/Cadillac_CT4_V_2022_lambert6_BaseColor-6.png
+map_Ks Maps/Cadillac_CT4_V_2022_lambert6_Specular.png
+map_Ns Maps/Cadillac_CT4_V_2022_lambert6_Roughness.png
+# map_refl Maps/Cadillac_CT4_V_2022_lambert6_Metalness.png
+# map_Bump -bm 1.000000 Maps/Cadillac_CT4_V_2022_lambert6_Normal.png

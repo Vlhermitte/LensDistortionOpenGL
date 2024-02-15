@@ -8,6 +8,11 @@ std::vector<Model> initModels() {
     raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
     models.emplace_back(raceCar);
 
+    Model cadillac("../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
+    cadillac.setPosition(glm::vec3(0.0f, -0.5f, 0.0f));
+    cadillac.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
+    models.emplace_back(cadillac);
+
     return models;
 }
 
@@ -58,8 +63,8 @@ int main(int argc, char** argv) {
 
     // Load planksTextures
     Texture planksTextures[] {
-            Texture("../Resources/Textures/planks/planks.png", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
-            Texture("../Resources/Textures/planks/planksSpec.png", "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
+            Texture("../Resources/Textures/planks/planks.png", "diffuse", 0),
+            Texture("../Resources/Textures/planks/planksSpec.png", "specular", 1)
     };
 
     Shader defaultShader("../Shaders/default.vert", "../Shaders/default.frag");
@@ -159,6 +164,8 @@ int main(int argc, char** argv) {
     // Clean up
     defaultShader.Delete();
     lightShader.Delete();
+    skyboxShader.Delete();
+    shadowMapShader.Delete();
 
     glfwDestroyWindow(window);
     glfwTerminate();

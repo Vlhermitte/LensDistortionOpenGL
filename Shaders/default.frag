@@ -31,6 +31,14 @@ struct Light {
     float specular;
 };
 
+struct Material {      // structure that describes currently used material
+    vec3  ambient;       // ambient component
+    vec3  diffuse;       // diffuse component
+    vec3  specular;      // specular component
+    float shininess;     // sharpness of specular reflection
+    bool  useTexture;    // defines whether the texture is used or not
+};
+
 vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
     // NOT USED ANYMORE
     float r = length(coord);
@@ -125,16 +133,6 @@ Light spotLight() {
 }
 
 void main() {
-    /* NOT USED ANYMORE
-    // Radial distortion
-    vec2 uv = (texCoord * 2.0) - 1.0;
-    vec2 rdv = RadialDistortion(uv, radialDistortionParams.x, radialDistortionParams.y, radialDistortionParams.z);
-    rdv = (rdv + 1.0) / 2.0;
-    // Tengential distortion (experimental)
-    vec2 tdv = TangentialDistortion(uv, tangentialDistortionParams.x, tangentialDistortionParams.y);
-    vec2 distortedCoord = rdv + tdv;
-    */
-
     // light calculations
     vec4 outputColor = vec4(0.0, 0.0, 0.0, 1.0);
     if (usePointLight) {

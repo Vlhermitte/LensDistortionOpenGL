@@ -23,6 +23,7 @@ private:
     static std::vector<Vertex> getVertices(const aiMesh *mesh);
     static std::vector<GLuint> getIndices(const aiMesh *mesh);
     static std::vector<Texture> getTextures(const aiMaterial *material, const std::string &filename);
+    static Material getMaterials(const aiMaterial *material);
 public:
     explicit Model(const std::string &path);
 
