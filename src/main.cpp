@@ -2,12 +2,19 @@
 
 std::vector<Model> initModels() {
     std::vector<Model> models;
+    // Floor
+    Model floor("../Resources/Models/Floor/floor.obj");
+    floor.setPosition(glm::vec3(0.0f, -0.5f, 0.0f));
+    floor.setScale(glm::vec3(1.0f, 1.0f, 1.0f));
+    models.emplace_back(floor);
+
     // RaceCar
     Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
     raceCar.setPosition(glm::vec3(0.5f, -0.5f, 0.5f));
     raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
     models.emplace_back(raceCar);
 
+    // Cadillac
     Model cadillac("../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
     cadillac.setPosition(glm::vec3(0.0f, -0.5f, 0.0f));
     cadillac.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
@@ -61,32 +68,16 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    // Load planksTextures
-    Texture planksTextures[] {
-            Texture("../Resources/Textures/planks/planks.png", "diffuse", 0),
-            Texture("../Resources/Textures/planks/planksSpec.png", "specular", 1)
-    };
-
     Shader defaultShader("../Shaders/default.vert", "../Shaders/default.frag");
     Shader lightShader("../Shaders/light.vert", "../Shaders/light.frag");
     Shader skyboxShader("../Shaders/skybox.vert", "../Shaders/skybox.frag");
     Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag"); // Not used yet
 
-    /// Objects
-    // floor
-    std::vector<Vertex> floorVerts(floorVertices, floorVertices + sizeof(floorVertices) / sizeof(Vertex));
-    std::vector<GLuint> floorInd(floorIndices, floorIndices + sizeof(floorIndices) / sizeof(GLuint));
-    std::vector<Texture> tex(planksTextures, planksTextures + sizeof(planksTextures) / sizeof(Texture));
-    Mesh floor(floorVerts, floorInd, tex);
-
     // Sun
     std::vector<Vertex> sunVerts(sunVertices, sunVertices + sizeof(sunVertices) / sizeof(Vertex));
     std::vector<GLuint> sunInd(sunIndices, sunIndices + sizeof(sunIndices) / sizeof(GLuint));
-    Mesh sun(sunVerts, sunInd, tex);
-
-    glm::vec3 objectPos = glm::vec3(0.0f, -0.5f, 0.0f);
-    glm::mat4 objectModel = glm::mat4(1.0f);
-    objectModel = glm::translate(objectModel, objectPos);
+    std::vector<Texture> sunTex = {}; // No textures
+    Mesh sun(sunVerts, sunInd, sunTex);
 
     glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     glm::vec3 sunPos = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -148,7 +139,6 @@ int main(int argc, char** argv) {
         skybox.Draw(skyboxShader, camera);
 
         // Draw Meshes
-        floor.Draw(defaultShader, camera, objectModel);
         sun.Draw(lightShader, camera, sunModel);
 
         // Draw models

@@ -36,6 +36,7 @@ public:
     VAO meshVAO;
 
     Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vector<Texture>& textures);
+    Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
     void Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix);
 };
 

@@ -8,7 +8,6 @@ Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vec
     this->vertices = vertices;
     this->indices = indices;
     this->textures = textures;
-
     setupMesh();
 }
 

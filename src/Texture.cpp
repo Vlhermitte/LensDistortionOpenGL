@@ -35,7 +35,7 @@ Texture::Texture(const char* image, const char* texType, GLenum slot) {
             break;
     }
     if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         CHECK_GL_ERROR();
     } else {

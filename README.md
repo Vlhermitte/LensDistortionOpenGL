@@ -2,12 +2,10 @@
 
 This repository is still in development. The code is not yet ready for use.
 
-This is a simple implementation of lens distortion simulation in OpenGL. 
-It uses a simple vertex and fragment shader to simulate the lens distortion effect.
-The radial and tangential distortion are computed in the fragment shader.
-
-## Demo
-![Demo](Screenshots/no_distortion.png) ![Demo2](Screenshots/demo_radial_distortion.png)
+## Approach
+The scene is rendered to a custom framebuffer. 
+The image rendered in the framebuffer is then used as a texture to a quad.
+The texture to the quad is then distorted using a lens distortion shader.
 
 ## Dependencies
 - OpenGL
@@ -15,3 +13,5 @@ The radial and tangential distortion are computed in the fragment shader.
 - GLEW
 - GLM
 - stb_image
+- Assimp
+- OpenCV

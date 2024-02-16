@@ -119,7 +119,7 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::s
                 textureName.insert(0, fileName.substr(0, found + 1));
             }
             std::cout << "Loading diffuse file: " << textureName << std::endl;
-            Texture texture(textureName.c_str(), "diffuse", i);
+            Texture texture(textureName.c_str(), "diffuse", 0);
             textures.push_back(texture);
         }
     } else {
@@ -135,7 +135,7 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::s
                 textureName.insert(0, fileName.substr(0, found + 1));
             }
             std::cout << "Loading diffuse file: " << textureName << std::endl;
-            Texture texture(textureName.c_str(), "specular", i);
+            Texture texture(textureName.c_str(), "specular", 1);
             textures.push_back(texture);
         }
     } else {
