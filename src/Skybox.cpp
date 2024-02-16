@@ -45,6 +45,14 @@ void Skybox::setupSkybox() {
     CHECK_GL_ERROR();
 }
 
+GLuint Skybox::getCubeMapTexture() const {
+    return cubeMapTexture;
+}
+
+VAO Skybox::getVAO() const {
+    return skyboxVAO;
+}
+
 void Skybox::Draw(Shader& shader, Camera& camera) {
     glDepthFunc(GL_LEQUAL);
     shader.Activate();

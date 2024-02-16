@@ -6,6 +6,7 @@ in vec3 position;
 in vec3 normal;
 in vec3 color;
 in vec2 texCoord;
+in vec3 reflectedVector;
 
 struct Light {
     float diffuse;
@@ -27,6 +28,7 @@ uniform mat4 projectionMatrix;
 uniform vec3 camPos;
 
 // Distortion and Texture
+uniform samplerCube skybox;
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 uniform sampler2D normal0;
@@ -154,6 +156,10 @@ void main() {
         outputColor += texture(specular0, texCoord).r * light.specular;
         outputColor *= lightColor;
     }
+
+    // skybox
+    vec4 reflectedColor = texture(skybox, reflectedVector);
+    outputColor = mix(outputColor, reflectedColor, 0.5f);
 
     FragColor = outputColor;
 }

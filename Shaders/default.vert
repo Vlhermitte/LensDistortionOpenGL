@@ -10,18 +10,24 @@ uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 normalMatrix;
 uniform mat4 camMatrix; // view * projection
+uniform vec3 camPos;
 
 out vec3 position;
 out vec3 color;
 out vec3 normal;
 out vec2 texCoord;
+out vec3 reflectedVector;
 
 void main() {
     color = aColor;
     texCoord = aTexCoord;
     normal = normalize(vec3(normalMatrix * vec4(aNormal, 0.0)));
-
     // current position
     position = vec3(modelMatrix * vec4(aPos, 1.0f));
+
+    // reflect vector
+    vec3 viewVector = normalize(position - camPos);
+    reflectedVector = reflect(viewVector, normal);
+
     gl_Position = camMatrix * vec4(position, 1.0); // PVM * aPos
 }

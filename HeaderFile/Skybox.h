@@ -21,6 +21,9 @@ private:
     void setupSkybox();
 public:
     Skybox(std::vector<std::string>& faces, std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
+    Skybox() = default;
+    GLuint getCubeMapTexture() const;
+    VAO getVAO() const;
     void Draw(Shader& shader, Camera& camera);
     void Delete() const;
 };

@@ -54,12 +54,12 @@ Texture::Texture(const char* image, const char* texType, GLenum slot) {
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit) {
     GLuint texUni = glGetUniformLocation(shader.ID, uniform);
     shader.Activate();
-    glUniform1i(texUni, unit);
+    glUniform1i(texUni, unit + 1); // +1 because the texture class uses GL_TEXTURE1 as the first texture (GL_TEXTURE0 is reserved for the skybox texture)
     CHECK_GL_ERROR();
 }
 
 void Texture::Bind() {
-    glActiveTexture(GL_TEXTURE0 + unit);
+    glActiveTexture(GL_TEXTURE1 + unit);
     glBindTexture(GL_TEXTURE_2D, ID);
     CHECK_GL_ERROR();
 }

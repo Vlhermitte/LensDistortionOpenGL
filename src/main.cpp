@@ -22,7 +22,7 @@ std::vector<Model> initModels() {
 
     // Sun
     Model sun("../Resources/Models/Sun/Sun.obj");
-    sun.setPosition(glm::vec3(0.5f, 1.0f, 0.5f));
+    sun.setPosition(glm::vec3(0.5f, 0.5f, 0.5f));
     sun.setScale(glm::vec3(0.2f, 0.2f, 0.2f));
     models.emplace_back(sun);
 
@@ -143,6 +143,16 @@ int main(int argc, char** argv) {
 
         // Draw models
         for (auto & model : models) {
+            // Environment mapping
+            skybox.getVAO().Bind();
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getCubeMapTexture());
+            defaultShader.Activate();
+            glUniform1i(glGetUniformLocation(defaultShader.ID, "skybox"), 0);
+            defaultShader.Deactivate();
+            skybox.getVAO().Unbind();
+            CHECK_GL_ERROR();
+
             model.Draw(defaultShader, camera);
         }
 
