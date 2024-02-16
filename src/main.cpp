@@ -79,16 +79,8 @@ int main(int argc, char** argv) {
     Shader skyboxShader("../Shaders/skybox.vert", "../Shaders/skybox.frag");
     Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag"); // Not used yet
 
-    // Sun
-    std::vector<Vertex> sunVerts(sunVertices, sunVertices + sizeof(sunVertices) / sizeof(Vertex));
-    std::vector<GLuint> sunInd(sunIndices, sunIndices + sizeof(sunIndices) / sizeof(GLuint));
-    std::vector<Texture> sunTex = {}; // No textures
-    Mesh sun(sunVerts, sunInd, sunTex);
-
     glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     glm::vec3 sunPos = glm::vec3(0.5f, 0.5f, 0.5f);
-    glm::mat4 sunModel = glm::mat4(1.0f);
-    sunModel = glm::translate(sunModel, sunPos);
 
     defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
@@ -145,9 +137,6 @@ int main(int argc, char** argv) {
 
         // Draw Skybox
         skybox.Draw(skyboxShader, camera);
-
-        // Draw Meshes
-        // sun.Draw(lightShader, camera, sunModel);
 
         // Draw models
         for (auto & model : models) {
