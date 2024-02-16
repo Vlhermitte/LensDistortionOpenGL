@@ -26,6 +26,10 @@ void Mesh::setupMesh() {
     CHECK_GL_ERROR();
 }
 
+void Mesh::setMaterial(Material material) {
+    this->material = material;
+}
+
 void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
     shader.Activate();
     meshVAO.Bind();
@@ -48,6 +52,8 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
         textures[i].texUnit(shader, (type + number).c_str(), i);
         textures[i].Bind();
     }
+
+    glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), material.shininess);
 
     glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
     camera.Matrix(shader, "camMatrix");

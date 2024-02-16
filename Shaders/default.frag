@@ -7,6 +7,19 @@ in vec3 normal;
 in vec3 color;
 in vec2 texCoord;
 
+struct Light {
+    float diffuse;
+    float specular;
+};
+
+struct Material {      // structure that describes currently used material
+    vec3  ambient;       // ambient component
+    vec3  diffuse;       // diffuse component
+    vec3  specular;      // specular component
+    float shininess;     // sharpness of specular reflection
+    bool  useTexture;    // defines whether the texture is used or not
+};
+
 // Matrices
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -26,19 +39,8 @@ uniform vec4 lightColor;
 uniform bool usePointLight;
 uniform bool useDirectionalLight;
 uniform bool useSpotLight;
+uniform Material material;
 
-struct Light {
-    float diffuse;
-    float specular;
-};
-
-struct Material {      // structure that describes currently used material
-    vec3  ambient;       // ambient component
-    vec3  diffuse;       // diffuse component
-    vec3  specular;      // specular component
-    float shininess;     // sharpness of specular reflection
-    bool  useTexture;    // defines whether the texture is used or not
-};
 
 vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
     // NOT USED ANYMORE
@@ -75,11 +77,10 @@ Light pointLight() {
     float diffuse = max(dot(normal, lightDirection), 0.0f);
 
     // specular lighting
-    float specularStrength = 0.5;
     vec3 viewDir = normalize(camPos - position);
     vec3 reflectDir = reflect(-lightDirection, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    float specular = specularStrength * spec;
+    vec3 halfwayVec = normalize(lightDirection + viewDir);
+    float specular = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
 
     Light light = Light((diffuse * attenuation + ambient), specular * attenuation);
     return light;
@@ -96,11 +97,10 @@ Light directionalLight() {
     float diffuse = max(dot(normal, lightDirection), 0.0);
 
     // specular lighting
-    float specularStrength = 0.5;
     vec3 viewDir = normalize(camPos - position);
     vec3 reflectDir = reflect(-lightDirection, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    float specular = specularStrength * spec;
+    vec3 halfwayVec = normalize(lightDirection + viewDir);
+    float specular = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
 
     Light light = Light((diffuse + ambient), specular);
     return light;
@@ -120,11 +120,10 @@ Light spotLight() {
     float diffuse = max(dot(normal, lightDirection), 0.0f);
 
     // specular lighting
-    float specularStrength = 0.5;
     vec3 viewDir = normalize(camPos - position);
     vec3 reflectDir = reflect(-lightDirection, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    float specular = specularStrength * spec;
+    vec3 halfwayVec = normalize(lightDirection + viewDir);
+    float specular = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
 
     // spotlight
     float theta = dot(vec3(0.0f, -1.0f, 0.0f), -lightDirection);

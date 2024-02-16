@@ -63,6 +63,7 @@ bool Model::loadModel(std::string filename) {
         Material material = getMaterials(scene->mMaterials[mesh->mMaterialIndex]);
 
         meshes.emplace_back(vertices, indices, textures);
+        meshes.back().setMaterial(material);
         // free memory
         vertices.clear();
         indices.clear();

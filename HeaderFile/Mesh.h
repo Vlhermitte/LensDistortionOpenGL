@@ -27,16 +27,16 @@ typedef struct material {      // structure that describes currently used materi
 class Mesh {
 private:
     void setupMesh();
-public:
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
     Material material;
-
     VAO meshVAO;
+public:
 
     Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vector<Texture>& textures);
-    Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
+    void setMaterial(Material material);
+
     void Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix);
 };
 
