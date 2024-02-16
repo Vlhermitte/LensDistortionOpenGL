@@ -1,10 +1,4 @@
 #include "Camera.h"
-// if data is not included, include it
-#ifndef OPENGLPROJECT_DATA_H
-#define OPENGLPROJECT_DATA_H
-#include "data.h"
-#endif
-
 
 Camera::Camera(int width, int height, glm::vec3 position) {
     Position = position;

@@ -10,11 +10,6 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
-// if data.h is not included
-#ifndef OPENGLPROJECT_DATA_H
-#define OPENGLPROJECT_DATA_H
-#include "data.h"
-#endif
 
 class Skybox {
 private:
