@@ -37,8 +37,12 @@ bool Model::loadModel(std::string filename) {
             filename,
             0 |
             aiProcess_Triangulate |
-            aiProcess_FlipUVs |
-            aiProcess_GenNormals
+            aiProcess_GenNormals |
+            aiProcess_CalcTangentSpace |
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_OptimizeMeshes |
+            aiProcess_OptimizeGraph |
+            aiProcess_SplitLargeMeshes
             );
 
     if (scene == nullptr) {
@@ -59,6 +63,10 @@ bool Model::loadModel(std::string filename) {
         Material material = getMaterials(scene->mMaterials[mesh->mMaterialIndex]);
 
         meshes.emplace_back(vertices, indices, textures);
+        // free memory
+        vertices.clear();
+        indices.clear();
+        textures.clear();
     }
     return true;
 }
@@ -134,12 +142,28 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::s
             if (found != std::string::npos) { // If found
                 textureName.insert(0, fileName.substr(0, found + 1));
             }
-            std::cout << "Loading diffuse file: " << textureName << std::endl;
+            std::cout << "Loading specular file: " << textureName << std::endl;
             Texture texture(textureName.c_str(), "specular", 1);
             textures.push_back(texture);
         }
     } else {
         std::cout << "No specular texture" << std::endl;
+    }
+    if (material->GetTextureCount(aiTextureType_NORMALS) != 0) {
+        for (int i = 0; i < material->GetTextureCount(aiTextureType_NORMALS); i++) {
+            aiString path;
+            material->GetTexture(aiTextureType_NORMALS, i, &path);
+            std::string textureName = path.data;
+            size_t found = fileName.find_last_of("/\\");
+            if (found != std::string::npos) { // If found
+                textureName.insert(0, fileName.substr(0, found + 1));
+            }
+            std::cout << "Loading normal file: " << textureName << std::endl;
+            Texture texture(textureName.c_str(), "normal", 2);
+            textures.push_back(texture);
+        }
+    } else {
+        std::cout << "No normal texture" << std::endl;
     }
     return textures;
 }

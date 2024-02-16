@@ -16,6 +16,7 @@ uniform vec3 camPos;
 // Distortion and Texture
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
+uniform sampler2D normal0;
 uniform vec3 radialDistortionParams;
 uniform vec2 tangentialDistortionParams;
 
@@ -68,6 +69,7 @@ Light pointLight() {
     float ambient = 0.2f;
 
     // diffuse lighting
+    // vec3 normalMap = 2.0 * texture(normal0, texCoord).xyz - 1.0;
     vec3 normal = normalize(normal);
     vec3 lightDirection = normalize(lightPos - position);
     float diffuse = max(dot(normal, lightDirection), 0.0f);

@@ -20,6 +20,7 @@ Texture::Texture(const char* image, const char* texType, GLenum slot) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     GLenum format;
+    GLenum internalFormat = GL_RGBA;
     switch (nrChannels) {
         case 1:
             format = GL_RED;
@@ -34,8 +35,12 @@ Texture::Texture(const char* image, const char* texType, GLenum slot) {
             throw std::invalid_argument("Automatic Texture type recognition failed");
             break;
     }
+    if (std::string(texType) == "normal") {
+        format = GL_RGB;
+        internalFormat = GL_RGB;
+    }
     if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         CHECK_GL_ERROR();
     } else {

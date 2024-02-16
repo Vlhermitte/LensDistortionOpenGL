@@ -33,6 +33,7 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
 
     unsigned int numDiffuse = 0;
     unsigned int numSpecular = 0;
+    unsigned int numNormal = 0;
 
     for (unsigned int i = 0; i < textures.size(); i++) {
         std::string number;
@@ -41,6 +42,8 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
             number = std::to_string(numDiffuse++);
         } else if (type == "specular") {
             number = std::to_string(numSpecular++);
+        } else if (type == "normal") {
+            number = std::to_string(numNormal++);
         }
         textures[i].texUnit(shader, (type + number).c_str(), i);
         textures[i].Bind();

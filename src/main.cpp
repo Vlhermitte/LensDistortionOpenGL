@@ -20,6 +20,12 @@ std::vector<Model> initModels() {
     cadillac.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
     models.emplace_back(cadillac);
 
+    // Sun
+    Model sun("../Resources/Models/Sun/Sun.obj");
+    sun.setPosition(glm::vec3(0.5f, 0.5f, 0.5f));
+    sun.setScale(glm::vec3(0.2f, 0.2f, 0.2f));
+    models.emplace_back(sun);
+
     return models;
 }
 
@@ -112,6 +118,8 @@ int main(int argc, char** argv) {
     float deltaTime = 0.0f;
     unsigned int framesCounter = 0;
 
+    glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(window)) {
         currentTime = glfwGetTime();
         deltaTime = currentTime - previousTime;
@@ -139,7 +147,7 @@ int main(int argc, char** argv) {
         skybox.Draw(skyboxShader, camera);
 
         // Draw Meshes
-        sun.Draw(lightShader, camera, sunModel);
+        // sun.Draw(lightShader, camera, sunModel);
 
         // Draw models
         for (auto & model : models) {
