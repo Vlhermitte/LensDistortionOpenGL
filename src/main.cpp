@@ -3,26 +3,26 @@
 std::vector<Model> initModels() {
     std::vector<Model> models;
     // Floor
-    Model floor("../Resources/Models/Floor/floor.obj");
-    floor.setPosition(glm::vec3(0.0f, -0.5f, 0.0f));
+    Model floor("../Resources/Models/Floor/Floor.obj");
+    floor.setPosition(glm::vec3(0.0f, -0.25f, 0.0f));
     floor.setScale(glm::vec3(1.0f, 1.0f, 1.0f));
     models.emplace_back(floor);
 
     // RaceCar
     Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
-    raceCar.setPosition(glm::vec3(0.5f, -0.5f, 0.5f));
+    raceCar.setPosition(glm::vec3(0.5f, 0.0f, 0.5f));
     raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
     models.emplace_back(raceCar);
 
     // Cadillac
     Model cadillac("../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
-    cadillac.setPosition(glm::vec3(0.0f, -0.5f, 0.0f));
+    cadillac.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     cadillac.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
     models.emplace_back(cadillac);
 
     // Sun
     Model sun("../Resources/Models/Sun/Sun.obj");
-    sun.setPosition(glm::vec3(0.5f, 0.5f, 0.5f));
+    sun.setPosition(glm::vec3(0.5f, 1.0f, 0.5f));
     sun.setScale(glm::vec3(0.2f, 0.2f, 0.2f));
     models.emplace_back(sun);
 
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
     std::vector<Model> models = initModels();
 
     // Camera
-    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
+    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.5f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
     camera.AddRadialDistortion(defaultShader, glm::vec3(0.0f, 0.0f, 0.0f));
     camera.AddTangentialDistortion(defaultShader, glm::vec2(0.0f, 0.0f));
 

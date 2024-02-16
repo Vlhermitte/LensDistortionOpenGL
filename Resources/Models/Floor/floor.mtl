@@ -1,12 +1,14 @@
-# Blender 4.0.2 MTL File: 'None'
+# Blender 4.0.2 MTL File: 'Floor.blend'
 # www.blender.org
 
-newmtl floor.001
-Ns 0.000000
+newmtl Material.001
+Ns 1000.000000
 Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
-Ni 1.000000
+Ni 1.450000
 d 1.000000
-illum 3
-map_Kd planks.png
-map_Ks planksSpec.png
+illum 2
+map_Kd TilesSlateSquare001_COL_2K_SPECULAR.png
+map_Ks TilesSlateSquare001_NRM_2K_SPECULAR.png
+map_Kn TilesSlateSquare001_GLOSS_2K_SPECULAR.png
