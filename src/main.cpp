@@ -136,23 +136,12 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         camera.updateMatrix(60.0f, 0.1f, 100.0f);
-        camera.Matrix(defaultShader, "camMatrix");
 
         // Draw Skybox
         skybox.Draw(skyboxShader, camera);
 
         // Draw models
         for (auto & model : models) {
-            // Environment mapping
-            skybox.getVAO().Bind();
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getCubeMapTexture());
-            defaultShader.Activate();
-            glUniform1i(glGetUniformLocation(defaultShader.ID, "skybox"), 0);
-            defaultShader.Deactivate();
-            skybox.getVAO().Unbind();
-            CHECK_GL_ERROR();
-
             model.Draw(defaultShader, camera);
         }
 
@@ -166,6 +155,10 @@ int main(int argc, char** argv) {
     lightShader.Delete();
     skyboxShader.Delete();
     shadowMapShader.Delete();
+
+    for (auto & model : models) {
+        model.Delete();
+    }
 
     glfwDestroyWindow(window);
     glfwTerminate();

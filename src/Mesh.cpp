@@ -73,3 +73,6 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
     shader.Deactivate();
 }
 
+void Mesh::Delete() const {
+    meshVAO.Delete();
+}

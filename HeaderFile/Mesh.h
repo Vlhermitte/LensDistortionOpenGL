@@ -38,6 +38,7 @@ public:
     void setMaterial(Material material);
 
     void Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix);
+    void Delete() const;
 };
 
 

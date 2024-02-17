@@ -26,6 +26,12 @@ void Model::Draw(Shader shader, Camera camera) {
     }
 }
 
+void Model::Delete() const {
+    for (auto & mesh : meshes) {
+        mesh.Delete();
+    }
+}
+
 bool Model::loadModel(std::string filename) {
     Assimp::Importer importer;
 

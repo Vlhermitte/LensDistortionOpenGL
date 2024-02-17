@@ -31,6 +31,7 @@ public:
     void setScale(glm::vec3 scale);
 
     void Draw(Shader shader, Camera camera);
+    void Delete() const;
 };
 
 
