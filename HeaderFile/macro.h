@@ -5,6 +5,9 @@
 #ifndef OPENGLPROJECT_MACRO_H
 #define OPENGLPROJECT_MACRO_H
 
+#include <string>
+#include <iostream>
+
 #define CHECK_GL_ERROR() {\
     GLenum err = glGetError();\
     while (err != GL_NO_ERROR) {\

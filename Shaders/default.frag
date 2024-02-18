@@ -7,6 +7,7 @@ in vec3 normal;
 in vec3 color;
 in vec2 texCoord;
 in vec3 reflectedVector;
+in vec4 fragPosLightSpace;
 
 struct Light {
     float diffuse;
@@ -26,9 +27,11 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 uniform vec3 camPos;
+uniform mat4 lightSpaceMatrix;
 
 // Distortion and Texture
 uniform samplerCube skybox;
+uniform sampler2D shadowMap;
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 uniform sampler2D normal0;
@@ -104,7 +107,20 @@ Light directionalLight() {
     vec3 halfwayVec = normalize(lightDirection + viewDir);
     float specular = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
 
-    Light light = Light((diffuse + ambient), specular);
+    // Shadow
+    float shadow = 0.0;
+    vec4 lightCoords = fragPosLightSpace / fragPosLightSpace.w;
+    if (lightCoords.z <= 1.0) {
+        lightCoords = (lightCoords + 1.0f) / 2.0f;
+        float closestDepth = texture(shadowMap, lightCoords.xy).r;
+        float currentDepth = lightCoords.z;
+        float bias = 0.005f;
+        if (currentDepth > closestDepth + bias) {
+            shadow = 1.0;
+        }
+    }
+
+    Light light = Light((diffuse + ambient) * (1.0 - shadow), specular * (1.0 - shadow));
     return light;
 }
 

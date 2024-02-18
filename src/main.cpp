@@ -17,7 +17,7 @@ std::vector<Model> initModels() {
     // Cadillac
     Model cadillac("../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
     cadillac.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    cadillac.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
+    cadillac.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
     models.emplace_back(cadillac);
 
     // Sun
@@ -86,8 +86,8 @@ int main(int argc, char** argv) {
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), false);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
     defaultShader.Deactivate();
 
     lightShader.Activate();
@@ -109,6 +109,9 @@ int main(int argc, char** argv) {
     float currentTime = 0.0f;
     float deltaTime = 0.0f;
     unsigned int framesCounter = 0;
+
+    // Shadow Map
+    ShadowMap shadowMap;
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -137,6 +140,27 @@ int main(int argc, char** argv) {
 
         camera.updateMatrix(60.0f, 0.1f, 100.0f);
 
+        // Draw the models to the shadow map
+        shadowMap.ActivateShadows(shadowMapShader, sunPos);
+        for (auto & model : models) {
+            model.Draw(shadowMapShader, camera);
+        }
+        shadowMap.Unbind();
+
+        // Set the default framebuffer
+        int windowWidth, windowHeight;
+        glfwGetFramebufferSize(window, &windowWidth, &windowHeight); // We need to get the framebuffer size in case of retina displays
+        glViewport(0, 0, windowWidth, windowHeight);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        defaultShader.Activate();
+        glUniformMatrix4fv(glGetUniformLocation(defaultShader.ID, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(shadowMap.GetLightSpaceMatrix()));
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, shadowMap.GetDepthMap());
+        glUniform1i(glGetUniformLocation(defaultShader.ID, "shadowMap"), 1);
+        CHECK_GL_ERROR();
+        defaultShader.Deactivate();
+
         // Draw Skybox
         skybox.Draw(skyboxShader, camera);
 
@@ -159,6 +183,8 @@ int main(int argc, char** argv) {
     for (auto & model : models) {
         model.Delete();
     }
+
+    shadowMap.Delete();
 
     glfwDestroyWindow(window);
     glfwTerminate();

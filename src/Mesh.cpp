@@ -54,11 +54,14 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
     }
 
     glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), material.shininess);
+    CHECK_GL_ERROR();
 
     glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
     camera.Matrix(shader, "camMatrix");
+    CHECK_GL_ERROR();
 
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    CHECK_GL_ERROR();
     const glm::mat3 modelRotationMatrix = glm::mat3(
             modelMatrix[0],
             modelMatrix[1],
@@ -66,6 +69,7 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
     );
     glm::mat4 normalMatrix = glm::transpose(glm::inverse(glm::mat4(glm::mat3(modelRotationMatrix))));
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normalMatrix"), 1, GL_FALSE, glm::value_ptr(normalMatrix));
+    CHECK_GL_ERROR();
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     CHECK_GL_ERROR();

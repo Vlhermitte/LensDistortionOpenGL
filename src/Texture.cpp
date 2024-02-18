@@ -49,17 +49,18 @@ Texture::Texture(const char* image, const char* texType, GLenum slot) {
     }
     stbi_image_free(data);
     glBindTexture(GL_TEXTURE_2D, 0);
+    CHECK_GL_ERROR();
 }
 
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit) {
-    GLuint texUni = glGetUniformLocation(shader.ID, uniform);
+    GLint texUni = glGetUniformLocation(shader.ID, uniform);
     shader.Activate();
-    glUniform1i(texUni, unit + 1); // +1 because the texture class uses GL_TEXTURE1 as the first texture (GL_TEXTURE0 is reserved for the skybox texture)
+    glUniform1i(texUni, unit + 2); // +2 because the texture class uses GL_TEXTURE2 as the first texture (GL_TEXTURE0 is reserved for the skybox texture and GL_TEXTURE1 shadow map texture)
     CHECK_GL_ERROR();
 }
 
 void Texture::Bind() {
-    glActiveTexture(GL_TEXTURE1 + unit);
+    glActiveTexture(GL_TEXTURE2 + unit);
     glBindTexture(GL_TEXTURE_2D, ID);
     CHECK_GL_ERROR();
 }

@@ -17,5 +17,6 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "Skybox.h"
+#include "ShadowMap.h"
 
 #endif //OPENGLPROJECT_MAIN_H

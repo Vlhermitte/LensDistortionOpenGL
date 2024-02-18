@@ -11,12 +11,14 @@ uniform mat4 projectionMatrix;
 uniform mat4 normalMatrix;
 uniform mat4 camMatrix; // view * projection
 uniform vec3 camPos;
+uniform mat4 lightSpaceMatrix;
 
 out vec3 position;
 out vec3 color;
 out vec3 normal;
 out vec2 texCoord;
 out vec3 reflectedVector;
+out vec4 fragPosLightSpace;
 
 void main() {
     color = aColor;
@@ -28,6 +30,9 @@ void main() {
     // reflect vector
     vec3 viewVector = normalize(position - camPos);
     reflectedVector = reflect(viewVector, normal);
+
+    // light space matrix
+    fragPosLightSpace = lightSpaceMatrix * vec4(position, 1.0);
 
     gl_Position = camMatrix * vec4(position, 1.0); // PVM * aPos
 }

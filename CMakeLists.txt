@@ -50,6 +50,8 @@ add_executable(${PROJECT_NAME} src/main.cpp HeaderFile/main.h
         HeaderFile/macro.h
         src/Skybox.cpp
         HeaderFile/Skybox.h
+        src/ShadowMap.cpp
+        HeaderFile/ShadowMap.h
 
 )
 
