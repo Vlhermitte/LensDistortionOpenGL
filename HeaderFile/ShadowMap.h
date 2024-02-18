@@ -19,8 +19,6 @@ private:
     GLuint depthMap{};
     GLuint SHADOW_WIDTH;
     GLuint SHADOW_HEIGHT;
-    glm::mat4 lightProjection{};
-    glm::mat4 lightView{};
     glm::mat4 lightSpaceMatrix{};
     float near_plane = 0.1f;
     float far_plane = 100.0f;
