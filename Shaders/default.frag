@@ -114,10 +114,17 @@ Light directionalLight() {
         lightCoords = (lightCoords + 1.0f) / 2.0f;
         float closestDepth = texture(shadowMap, lightCoords.xy).r;
         float currentDepth = lightCoords.z;
-        float bias = 0.005f;
-        if (currentDepth > closestDepth + bias) {
-            shadow = 1.0;
+        float bias = min(0.025 * (1.0 - dot(normal, lightDirection)), 0.005);
+        // Soft shadows
+        int sampleRadius = 4;
+        vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+        for (int x = -sampleRadius; x <= sampleRadius; ++x) {
+            for (int y = -sampleRadius; y <= sampleRadius; ++y) {
+                float pcfDepth = texture(shadowMap, lightCoords.xy + vec2(x, y) * texelSize).r;
+                shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+            }
         }
+        shadow /= pow(2 * sampleRadius + 1, 2);
     }
 
     Light light = Light((diffuse + ambient) * (1.0 - shadow), specular * (1.0 - shadow));
