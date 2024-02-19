@@ -194,3 +194,7 @@ Material Model::getMaterials(const aiMaterial *material) {
     mat.useTexture = false;
     return mat;
 }
+
+glm::vec3 Model::getPosition() {
+    return position;
+}

@@ -32,6 +32,8 @@ public:
 
     void Draw(Shader shader, Camera camera);
     void Delete() const;
+
+    glm::vec3 getPosition();
 };
 
 

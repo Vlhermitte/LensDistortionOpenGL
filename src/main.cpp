@@ -10,20 +10,20 @@ std::vector<Model> initModels() {
 
     // RaceCar
     Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
-    raceCar.setPosition(glm::vec3(0.5f, 0.0f, 0.5f));
-    raceCar.setScale(glm::vec3(0.1f, 0.1f, 0.1f));
+    raceCar.setPosition(glm::vec3(1.5f, 0.0f, 0.5f));
+    raceCar.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(raceCar);
 
     // Cadillac
     Model cadillac("../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
     cadillac.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    cadillac.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
+    cadillac.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(cadillac);
 
     // Sun
     Model sun("../Resources/Models/Sun/Sun.obj");
-    sun.setPosition(glm::vec3(0.5f, 0.5f, 0.5f));
-    sun.setScale(glm::vec3(0.2f, 0.2f, 0.2f));
+    sun.setPosition(glm::vec3(1.0f, 0.5f, 0.0f));
+    sun.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(sun);
 
     return models;
@@ -79,8 +79,13 @@ int main(int argc, char** argv) {
     Shader skyboxShader("../Shaders/skybox.vert", "../Shaders/skybox.frag");
     Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag"); // Not used yet
 
+    // Skybox
+    Skybox skybox = initSkybox();
+    // Models
+    std::vector<Model> models = initModels();
+
     glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    glm::vec3 sunPos = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 sunPos = models[3].getPosition();
 
     defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
@@ -93,11 +98,6 @@ int main(int argc, char** argv) {
     lightShader.Activate();
     glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     lightShader.Deactivate();
-
-    // Skybox
-    Skybox skybox = initSkybox();
-    // Models
-    std::vector<Model> models = initModels();
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.5f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
