@@ -35,8 +35,7 @@ uniform sampler2D shadowMap;
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 uniform sampler2D normal0;
-uniform vec3 radialDistortionParams;
-uniform vec2 tangentialDistortionParams;
+
 
 // Lighting
 uniform vec3 lightPos;
@@ -46,23 +45,6 @@ uniform bool useDirectionalLight;
 uniform bool useSpotLight;
 uniform Material material;
 
-
-vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
-    // NOT USED ANYMORE
-    float r = length(coord);
-    float distortionFactor = 1.0 + k1 * pow(r, 2) + k2 * pow(r, 4) + k3 * pow(r, 6);
-    return distortionFactor * coord;
-}
-
-vec2 TangentialDistortion(vec2 coord, float p1, float p2) {
-    // NOT USED ANYMORE
-    float x = coord.x;
-    float y = coord.y;
-    float r2 = x * x + y * y;
-    float dx = 2.0 * p1 * x * y + p2 * (r2 + 2.0 * x * x);
-    float dy = p1 * (r2 + 2.0 * y * y) + 2.0 * p2 * x * y;
-    return vec2(dx, dy);
-}
 
 // Point light
 Light pointLight() {

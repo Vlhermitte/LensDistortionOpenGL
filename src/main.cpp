@@ -77,7 +77,9 @@ int main(int argc, char** argv) {
     Shader defaultShader("../Shaders/default.vert", "../Shaders/default.frag");
     Shader lightShader("../Shaders/light.vert", "../Shaders/light.frag");
     Shader skyboxShader("../Shaders/skybox.vert", "../Shaders/skybox.frag");
-    Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag"); // Not used yet
+    Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag");
+    Shader postProcessShader("../Shaders/postProcessShader.vert", "../Shaders/postProcessShader.frag");
+
 
     // Skybox
     Skybox skybox = initSkybox();
@@ -101,17 +103,22 @@ int main(int argc, char** argv) {
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.5f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
-    camera.AddRadialDistortion(defaultShader, glm::vec3(0.0f, 0.0f, 0.0f));
-    camera.AddTangentialDistortion(defaultShader, glm::vec2(0.0f, 0.0f));
+    camera.AddRadialDistortion(postProcessShader, glm::vec3(0.0f, 0.0f, 0.0f));
+    camera.AddTangentialDistortion(postProcessShader, glm::vec2(0.0f, 0.0f));
 
     // Time
     float previousTime = 0.0f;
     float currentTime = 0.0f;
     float deltaTime = 0.0f;
     unsigned int framesCounter = 0;
+    int windowWidth, windowHeight;
+    glfwGetFramebufferSize(window, &windowWidth, &windowHeight); // We need to get the framebuffer size in case of retina displays
 
     // Shadow Map
     ShadowMap shadowMap;
+
+    // Custom Framebuffer, we will use it to render the scene to a texture and then use this texture to render a quad on the screen
+    Framebuffer framebuffer(windowWidth, windowHeight);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
@@ -148,9 +155,8 @@ int main(int argc, char** argv) {
         }
         shadowMap.Unbind();
 
-        // Set the default framebuffer
-        int windowWidth, windowHeight;
-        glfwGetFramebufferSize(window, &windowWidth, &windowHeight); // We need to get the framebuffer size in case of retina displays
+        // Set custom framebuffer
+        framebuffer.Bind();
         glViewport(0, 0, windowWidth, windowHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -170,6 +176,12 @@ int main(int argc, char** argv) {
             model.Draw(defaultShader, camera);
         }
 
+        // Unbind custom framebuffer
+        framebuffer.Unbind();
+
+        // Draw framebuffer texture to a quad
+        framebuffer.Draw(postProcessShader);
+
         // Swap buffers and GLFW poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -180,6 +192,7 @@ int main(int argc, char** argv) {
     lightShader.Delete();
     skyboxShader.Delete();
     shadowMapShader.Delete();
+    postProcessShader.Delete();
 
     for (auto & model : models) {
         model.Delete();

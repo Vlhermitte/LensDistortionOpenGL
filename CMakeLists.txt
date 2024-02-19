@@ -52,6 +52,8 @@ add_executable(${PROJECT_NAME} src/main.cpp HeaderFile/main.h
         HeaderFile/Skybox.h
         src/ShadowMap.cpp
         HeaderFile/ShadowMap.h
+        src/Framebuffer.cpp
+        HeaderFile/Framebuffer.h
 
 )
 
