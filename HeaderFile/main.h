@@ -9,7 +9,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
-#include <opencv4/opencv2/opencv.hpp>
 
 #include "Shader.h"
 #include "Camera.h"
