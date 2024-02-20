@@ -14,7 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
-#include <opencv4/opencv2/opencv.hpp>
+#include <stb/stb_image_write.h>
 
 #include "Shader.h"
 

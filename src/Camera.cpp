@@ -150,30 +150,12 @@ void Camera::handleKeyboard(GLFWwindow *window) {
         int windowsWidth, windowHeight;
         glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
         unsigned char *data = new unsigned char[3 * windowsWidth * windowHeight];
-        glReadPixels(0, 0, windowsWidth, windowHeight, GL_BGR, GL_UNSIGNED_BYTE, data);
-        cv::Mat image(windowHeight, windowsWidth, CV_8UC3, data);
-        cv::flip(image, image, 0);
-
-        // Apply radial distortion
-        cv::Mat undistorted;
-
-        // Set fx and fy using FOV
-        float fx = (windowsWidth) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
-        float fy = (windowHeight) / (2.0 * tan(glm::radians(FOVdeg / 2.0)));
-        cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) << fx, 0, windowsWidth / 2, 0, fy, windowHeight / 2, 0, 0, 1);
-        // get the distortion coefficients from the camera
-        cv::Mat distCoeffs = (cv::Mat_<double>(5, 1) <<
-                radialDistortionParams.x,
-                radialDistortionParams.y,
-                radialDistortionParams.z,
-                tangentialDistortionParams.x,
-                tangentialDistortionParams.y
-                );
-        cv::undistort(image, undistorted, cameraMatrix, distCoeffs);
-        // fit the image to the window
-        cv::resize(undistorted, undistorted, cv::Size(this->width, this->height));
-        cv::imwrite("../Screenshots/screenshot.png", undistorted);
-
+        glReadPixels(0, 0, windowsWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
+        // Flip the image
+        stbi_flip_vertically_on_write(true);
+        stbi_write_png("../Screenshots/screenshot.png", windowsWidth, windowHeight, 3, data, 0);
         delete[] data;
+
+        std::cout << "Screenshot taken" << std::endl;
     }
 }
