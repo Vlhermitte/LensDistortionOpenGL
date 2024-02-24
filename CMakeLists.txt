@@ -5,10 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-file(GLOB_RECURSE HEADER_FILES
-        ${CMAKE_SOURCE_DIR}/HeaderFile/*.h
-        ${CMAKE_SOURCE_DIR}/HeaderFile/*.hpp)
-
 # Find DLLs
 if (WIN32)
     file(GLOB DLLS "${CMAKE_SOURCE_DIR}/dlls/*.dll")
@@ -18,44 +14,40 @@ endif ()
 include_directories(
         ${CMAKE_SOURCE_DIR}/HeaderFile
         ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/Engine
         ${CMAKE_SOURCE_DIR}/Shaders
         ${CMAKE_SOURCE_DIR}/include/GLFW
         ${CMAKE_SOURCE_DIR}/include/GLEW
         ${CMAKE_SOURCE_DIR}/include/GLM
-        ${CMAKE_SOURCE_DIR}/include/KHR
         ${CMAKE_SOURCE_DIR}/include
+)
+
+file(GLOB_RECURSE HEADER_FILES
+        ${CMAKE_SOURCE_DIR}/HeaderFile/*.h
+        ${CMAKE_SOURCE_DIR}/HeaderFile/*.hpp)
+
+add_library(engine
+        src/Engine/Shader.cpp
+        src/Engine/VBO.cpp
+        src/Engine/EBO.cpp
+        src/Engine/VAO.cpp
+        src/Engine/Texture.cpp
+        src/Engine/Mesh.cpp
+        src/Engine/Model.cpp
+        src/Engine/Skybox.cpp
+        src/Engine/ShadowMap.cpp
+        src/Engine/Framebuffer.cpp
 )
 
 
 # Add executable
 add_executable(${PROJECT_NAME} src/main.cpp HeaderFile/main.h
-        src/Shader.cpp
-        HeaderFile/Shader.h
-        src/VBO.cpp
-        HeaderFile/VBO.h
-        src/EBO.cpp
-        HeaderFile/EBO.h
-        src/VAO.cpp
-        HeaderFile/VAO.h
-        HeaderFile/data.h
-        HeaderFile/Camera.h
-        src/Camera.cpp
-        include/stb/stb.cpp
-        src/Texture.cpp
-        HeaderFile/Texture.h
-        src/Mesh.cpp
-        HeaderFile/Mesh.h
-        src/Model.cpp
-        HeaderFile/Model.h
-        HeaderFile/macro.h
-        src/Skybox.cpp
-        HeaderFile/Skybox.h
-        src/ShadowMap.cpp
-        HeaderFile/ShadowMap.h
-        src/Framebuffer.cpp
-        HeaderFile/Framebuffer.h
+        src/Camera.cpp HeaderFile/Camera.h
+        include/stb/stb.cpp include/stb/stb_image.h include/stb/stb_image_write.h
+        ${HEADER_FILES})
 
-)
+# Link engine library
+target_link_libraries(${PROJECT_NAME} engine)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
