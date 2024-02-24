@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), true);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
     defaultShader.Deactivate();
 
     lightShader.Activate();

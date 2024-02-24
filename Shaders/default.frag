@@ -36,7 +36,6 @@ uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 uniform sampler2D normal0;
 
-
 // Lighting
 uniform vec3 lightPos;
 uniform vec4 lightColor;
@@ -142,29 +141,34 @@ Light spotLight() {
 
 void main() {
     // light calculations
-    vec4 outputColor = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 outputColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // Sample textures
+    vec4 texColor = texture(diffuse0, texCoord);
+    vec4 specularColor = texture(specular0, texCoord);
+
     if (usePointLight) {
         Light light = pointLight();
-        outputColor += texture(diffuse0, texCoord) * light.diffuse;
-        outputColor += texture(specular0, texCoord).r * light.specular;
+        outputColor += texColor * vec4(material.diffuse, 1.0f) * light.diffuse;
+        outputColor += specularColor * vec4(material.specular, 1.0f) * light.specular;
         outputColor *= lightColor;
     }
     if (useDirectionalLight) {
         Light light = directionalLight();
-        outputColor += texture(diffuse0, texCoord) * light.diffuse;
-        outputColor += texture(specular0, texCoord).r * light.specular;
+        outputColor += texColor * vec4(material.diffuse, 1.0f) * light.diffuse;
+        outputColor += specularColor * vec4(material.specular, 1.0f) * light.specular;
         outputColor *= lightColor;
     }
     if (useSpotLight) {
         Light light = spotLight();
-        outputColor += texture(diffuse0, texCoord) * light.diffuse;
-        outputColor += texture(specular0, texCoord).r * light.specular;
+        outputColor += texColor * vec4(material.diffuse, 1.0f) * light.diffuse;
+        outputColor += specularColor * vec4(material.specular, 1.0f) * light.specular;
         outputColor *= lightColor;
     }
 
     // skybox
     vec4 reflectedColor = texture(skybox, reflectedVector);
-    outputColor = mix(outputColor, reflectedColor, 0.5f);
+    outputColor = mix(outputColor, reflectedColor, 0.3f);
 
     FragColor = outputColor;
 }

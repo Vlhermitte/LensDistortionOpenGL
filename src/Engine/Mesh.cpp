@@ -53,6 +53,9 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
         textures[i].Bind();
     }
 
+    glUniform3f(glGetUniformLocation(shader.ID, "material.ambient"), material.ambient.x, material.ambient.y, material.ambient.z);
+    glUniform3f(glGetUniformLocation(shader.ID, "material.diffuse"), material.diffuse.x, material.diffuse.y, material.diffuse.z);
+    glUniform3f(glGetUniformLocation(shader.ID, "material.specular"), material.specular.x, material.specular.y, material.specular.z);
     glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), material.shininess);
     CHECK_GL_ERROR();
 
