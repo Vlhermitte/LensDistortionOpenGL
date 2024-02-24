@@ -20,4 +20,3 @@ The following image is a demo of the lens distortion simulation.
 - GLM
 - stb_image
 - Assimp
-- OpenCV
