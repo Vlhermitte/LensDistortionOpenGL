@@ -54,7 +54,7 @@ Light pointLight() {
     float attenuation = 1.0f / (1.0f + a * distance + b * pow(distance, 2)); // quadratic attenuation formula
 
     // lighting
-    float ambient = 0.2f;
+    float ambient = 0.05f;
 
     // diffuse lighting
     // vec3 normalMap = 2.0 * texture(normal0, texCoord).xyz - 1.0;
@@ -75,7 +75,7 @@ Light pointLight() {
 // directional light
 Light directionalLight() {
     // lighting
-    float ambient = 0.2f;
+    float ambient = 0.05f;
 
     // diffuse lighting
     vec3 normal = normalize(normal);
@@ -118,7 +118,7 @@ Light spotLight() {
     float innerCutOff = 0.95f;
 
     // lighting
-    float ambient = 0.2f;
+    float ambient = 0.05f;
 
     // diffuse lighting
     vec3 normal = normalize(normal);
@@ -149,19 +149,19 @@ void main() {
 
     if (usePointLight) {
         Light light = pointLight();
-        outputColor += texColor * vec4(material.diffuse, 1.0f) * light.diffuse;
+        outputColor += texColor * vec4(material.diffuse + material.ambient, 1.0f) * light.diffuse;
         outputColor += specularColor * vec4(material.specular, 1.0f) * light.specular;
         outputColor *= lightColor;
     }
     if (useDirectionalLight) {
         Light light = directionalLight();
-        outputColor += texColor * vec4(material.diffuse, 1.0f) * light.diffuse;
+        outputColor += texColor * vec4(material.diffuse + material.ambient, 1.0f) * light.diffuse;
         outputColor += specularColor * vec4(material.specular, 1.0f) * light.specular;
         outputColor *= lightColor;
     }
     if (useSpotLight) {
         Light light = spotLight();
-        outputColor += texColor * vec4(material.diffuse, 1.0f) * light.diffuse;
+        outputColor += texColor * vec4(material.diffuse + material.ambient, 1.0f) * light.diffuse;
         outputColor += specularColor * vec4(material.specular, 1.0f) * light.specular;
         outputColor *= lightColor;
     }

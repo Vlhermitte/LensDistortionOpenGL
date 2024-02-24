@@ -178,19 +178,24 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::s
 Material Model::getMaterials(const aiMaterial *material) {
     Material mat;
     aiColor3D color(0.f, 0.f, 0.f);
-    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_AMBIENT, color)) {
+    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_AMBIENT, color))
         mat.ambient = glm::vec3(color.r, color.g, color.b);
-    }
-    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
+    else
+        mat.ambient = glm::vec3(0.1f, 0.1f, 0.1f); // Default value
+    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color))
         mat.diffuse = glm::vec3(color.r, color.g, color.b);
-    }
-    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, color)) {
+    else
+        mat.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); // Default value
+    if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, color))
         mat.specular = glm::vec3(color.r, color.g, color.b);
-    }
+    else
+        mat.specular = glm::vec3(0.5f, 0.5f, 0.5f); // Default value
     float shininess;
-    if (AI_SUCCESS == material->Get(AI_MATKEY_SHININESS, shininess)) {
+    if (AI_SUCCESS == material->Get(AI_MATKEY_SHININESS, shininess))
         mat.shininess = shininess;
-    }
+    else
+        mat.shininess = 32.0f; // Default value
+
     mat.useTexture = false;
     return mat;
 }
