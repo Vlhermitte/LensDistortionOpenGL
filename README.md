@@ -1,6 +1,6 @@
-# Implementation of lens distortion simulation in OpenGL (STILL IN DEVELOPMENT)
+# Implementation of lens distortion simulation in OpenGL
 
-This repository is still in development. The code is not yet ready for use.
+This repository is still in development. The project can be used, but some features are still being implemented.
 
 ## Approach
 The scene is rendered to a custom framebuffer. 
