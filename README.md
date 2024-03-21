@@ -9,8 +9,10 @@ The texture to the quad is then distorted using a lens distortion shader.
 
 #### Radial distortion is model using the following equation:
 ```math
-r = sqrt(x^2 + y^2)
+r = sqrt(x^2 + y^2) \\
+
 x' = x * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
+
 y' = y * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
 ```
 
@@ -19,6 +21,7 @@ Where k1, k2 and k3 are the radial distortion coefficients.
 #### Tengential distortion is model using the following equation:
 ```math
 x' = x + (2 * p1 * x * y + p2 * (r^2 + 2 * x^2)) \\
+
 y' = y + (p1 * (r^2 + 2 * y^2) + 2 * p2 * x * y) \\
 ```
 Where p1 and p2 are the tangential distortion coefficients.
@@ -69,7 +72,9 @@ Then apply perspective division to normalize the coordinates.
 
 ```math
     x_{ndc} = \frac{x_{clip}}{w_{clip}} \\
+    
     y_{ndc} = \frac{y_{clip}}{w_{clip}} \\
+    
     z_{ndc} = \frac{z_{clip}}{w_{clip}} \\
 ```
 
@@ -77,6 +82,7 @@ Then we can apply the distortion to the normalized coordinates using the followi
 
 ```math
     x_{distorted} = x_{ndc} * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
+    
     y_{distorted} = y_{ndc} * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
 ```
 
@@ -85,9 +91,20 @@ Where k1, k2 and k3 are the radial distortion coefficients and r is the distance
 Then we need to apply the inverse of the perspective division to get the distorted clip coordinates.
 
 ```math
-    x_{clip} = x_{distorted} * w_{clip} \\
-    y_{clip} = y_{distorted} * w_{clip} \\
-    z_{clip} = z_{distorted} * w_{clip} \\
+    \begin{bmatrix}
+        x_{clip} \\
+        y_{clip} \\
+        z_{clip} \\
+        w_{clip}
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        x_{distorted} \\
+        y_{distorted} \\
+        z_{distorted} \\
+        1
+    \end{bmatrix}
+    \times w_{distorted}
 ```
 
 Finally, we can apply the inverse of the projection matrix to get the distorted vertex position.
