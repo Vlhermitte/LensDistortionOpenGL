@@ -9,11 +9,11 @@ The texture to the quad is then distorted using a lens distortion shader.
 
 #### Radial distortion is model using the following equation:
 
-$$
+$$`
 r = sqrt(x^2 + y^2)
 x' = x * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
 y' = y * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
-$$
+`$$
 
 
 Where k1, k2 and k3 are the radial distortion coefficients.
