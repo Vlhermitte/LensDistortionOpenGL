@@ -11,7 +11,7 @@ fi # end windows
 if (uname -a | grep -q "Linux"); then
     echo "Linux detected - Installing dependencies"
     # install GLFW3
-    sudo apt-get install libglfw3
+    sudo apt-get install libglfw3 libglfw3-dev
     # install GLM
     sudo apt-get install libglm-dev
     # install GLEW
