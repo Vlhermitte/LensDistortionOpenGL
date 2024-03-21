@@ -93,19 +93,19 @@ Then we need to apply the inverse of the perspective division to get the distort
 Finally, we can apply the inverse of the projection matrix to get the distorted vertex position.
 
 ```math
-    P^{-1} = 
     \begin{bmatrix}
-        \frac{r-l}{2n} & 0 & 0 & \frac{r+l}{2n} \\
-        0 & \frac{t-b}{2n} & 0 & \frac{t+b}{2n} \\
-        0 & 0 & 0 & -1 \\
-        0 & 0 & \frac{f-n}{-2fn} & \frac{f+n}{2fn}
+        x_{distorted} \\
+        y_{distorted} \\
+        z_{distorted} \\
+        w_{distorted}
     \end{bmatrix}
-```
-
-```math
-    x_{distorted} = \frac{r-l}{2n} * x_{clip} + \frac{r+l}{2n} * z_{clip} \\
-    y_{distorted} = \frac{t-b}{2n} * y_{clip} + \frac{t+b}{2n} * z_{clip} \\
-    z_{distorted} = -z_{clip}
+    = P^{-1} \times
+    \begin{bmatrix}
+        x_{clip} \\
+        y_{clip} \\
+        z_{clip} \\
+        w_{clip}
+    \end{bmatrix}
 ```
 
 Where l, r, t, b, n and f are the left, right, top, bottom, near and far values of the frustum.
