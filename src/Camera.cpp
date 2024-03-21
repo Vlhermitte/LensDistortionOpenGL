@@ -49,6 +49,10 @@ glm::mat4 Camera::GetProjectionMatrix() {
     return projectionMatrix;
 }
 
+bool Camera::IsWireframeMode() {
+    return wireframeMode;
+}
+
 void Camera::Inputs(GLFWwindow *window) {
     handleMovement(window);
     handleMouse(window);

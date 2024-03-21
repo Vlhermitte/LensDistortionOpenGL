@@ -50,6 +50,7 @@ public:
 
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix();
+    bool IsWireframeMode();
 
     void Inputs(GLFWwindow* window);
 };

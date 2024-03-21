@@ -180,7 +180,15 @@ int main(int argc, char** argv) {
         framebuffer.Unbind();
 
         // Draw framebuffer texture to a quad
+        if (camera.IsWireframeMode()) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // Draw the quad without wireframe mode
+        }
+
         framebuffer.Draw(postProcessShader);
+
+        if (camera.IsWireframeMode()) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // Go back to camera wireframe mode
+        }
 
         // Swap buffers and GLFW poll events
         glfwSwapBuffers(window);
