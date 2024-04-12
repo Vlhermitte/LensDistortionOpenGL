@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.5f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
-    camera.AddRadialDistortion(postProcessShader, glm::vec3(0.0f, 0.1f, 0.0f));
+    camera.AddRadialDistortion(postProcessShader, glm::vec3(0.0f, 0.0f, 0.0f));
     camera.AddTangentialDistortion(postProcessShader, glm::vec2(0.0f, 0.0f));
 
     // Time
