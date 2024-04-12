@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Model.h"
 
 Camera::Camera(int width, int height, glm::vec3 position) {
     Position = position;
@@ -51,6 +52,20 @@ glm::mat4 Camera::GetProjectionMatrix() {
 
 bool Camera::IsWireframeMode() {
     return wireframeMode;
+}
+
+void Camera::TakeScreenshot(GLFWwindow *window, const char* filename) {
+    int windowsWidth, windowHeight;
+    glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
+    unsigned char *data = new unsigned char[3 * windowsWidth * windowHeight];
+    glReadPixels(0, 0, windowsWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
+    // Flip the image
+    stbi_flip_vertically_on_write(true);
+    auto filepath = "../Screenshots/" + std::string(filename);
+    stbi_write_png(filepath.c_str(), windowsWidth, windowHeight, 3, data, 0);
+    delete[] data;
+
+    std::cout << "Screenshot taken" << std::endl;
 }
 
 void Camera::Inputs(GLFWwindow *window) {
@@ -149,17 +164,31 @@ void Camera::handleKeyboard(GLFWwindow *window) {
         }
     }
 
-    // Get image from OpenGL and use it with OpenCV
+    // Get image from OpenGL
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-        int windowsWidth, windowHeight;
-        glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
-        unsigned char *data = new unsigned char[3 * windowsWidth * windowHeight];
-        glReadPixels(0, 0, windowsWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
-        // Flip the image
-        stbi_flip_vertically_on_write(true);
-        stbi_write_png("../Screenshots/screenshot.png", windowsWidth, windowHeight, 3, data, 0);
-        delete[] data;
+        // Save camera parameters to a file
+        std::ofstream file;
+        file.open("../Screenshots/camera.csv");
+        file << "x;y;z;" << "yaw;pitch;roll;" << "Up_x;Up_y;Up_z;" << "k1;k2;k3;p1;p2;" << "FOV (deg);" << "Projection Matrix;" << "Screenshot" << std::endl;
+        file << Position.x << ";" << Position.y << ";" << Position.z << ";";
+        file << Orientation.x << ";" << Orientation.y << ";" << Orientation.z << ";";
+        file << UpVector.x << ";" << UpVector.y << ";" << UpVector.z << ";";
+        file << radialDistortionParams.x << ";" << radialDistortionParams.y << ";" << radialDistortionParams.z << ";" << tangentialDistortionParams.x << ";" << tangentialDistortionParams.y << ";";
+        file << FOVdeg << ";";
+        file << "[";
+        for (int i = 0; i < 4; i++) {
+            file << "[";
+            for (int j = 0; j < 4; j++) {
+                file << projectionMatrix[i][j] << ",";
+            }
+            file << "]";
+        }
+        file << "];";
+        file << "screenshot0.png";
+        file << std::endl;
+        file.close();
 
-        std::cout << "Screenshot taken" << std::endl;
+        // Takes a screenshot
+        TakeScreenshot(window, "screenshot0.png");
     }
 }

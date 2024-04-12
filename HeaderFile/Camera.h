@@ -52,6 +52,7 @@ public:
     glm::mat4 GetProjectionMatrix();
     bool IsWireframeMode();
 
+    void TakeScreenshot(GLFWwindow *window, const char* filename);
     void Inputs(GLFWwindow* window);
 };
 
