@@ -56,10 +56,10 @@ The following image is a demo of the lens distortion simulation.
 
 ---
 
-## Different approach (Not implemented yet)
+## Different approach (Work in progress)
 Instead of applying the distortion to the texture, the position of each vertex can be moved to simulate the distortion.
 
-The compute the new position of each vertex, we need to apply transformation to get to the clipping coordinates,
+To compute the new position of each vertex, we need to apply transformation to get to the clipping coordinates,
 typically done using the projection-view-model (MVP) matrix.
 
 ```math
