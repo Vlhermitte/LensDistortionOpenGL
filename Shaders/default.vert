@@ -28,22 +28,28 @@ vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
 
 void main() {
     // Apply distortion on the vertex position
-    // 1. Apply projection matrix to the vertex position
-    vec4 projectedPos = camMatrix * modelMatrix * vec4(aPos, 1.0);
-    // 2. Go to clip space
-    vec2 clipCoords = projectedPos.xy / projectedPos.w;
-    // 3. Apply distortion
-    vec2 distortion = RadialDistortion(clipCoords, 0.0, 0.1, 0.0);
-    // 4. Go back to normalized device coordinates
-    vec4 distortedPosClip = vec4(distortion * projectedPos.w, projectedPos.z, projectedPos.w);
-    // 5. Go back to world space
-    vec4 worldSpacePos = inverse(modelMatrix) * inverse(camMatrix) * distortedPosClip;
+    // 1. Apply model matrix to get the world space position
+    vec4 worldSpacePos = modelMatrix * vec4(aPos, 1.0);
+    // 2. Apply view matrix to get the view space position
+    vec4 viewSpacePos = viewMatrix * worldSpacePos;
+    // 3. Apply projection matrix to get the clip space position
+    vec4 clipSpacePos = projectionMatrix * viewSpacePos;
+    // 4. Perspective division to get normalized device coordinates
+    vec2 ndcPos = clipSpacePos.xy / clipSpacePos.w;
+    // 5. Apply radial distortion to the normalized device coordinates
+    vec2 distortedPos = RadialDistortion(ndcPos, 0.1, 0.0, 0.0);
+    // 6. Convert back to clip space
+    vec4 clipSpaceDistortedPos = vec4(distortedPos * clipSpacePos.w, clipSpacePos.z, clipSpacePos.w);
+    // 7. Convert back to view space
+    vec4 viewSpaceDistortedPos = inverse(projectionMatrix) * clipSpaceDistortedPos;
+    // 8. Convert back to world space
+    vec4 worldSpaceDistortedPos = inverse(viewMatrix) * viewSpaceDistortedPos;
 
     color = aColor;
     texCoord = aTexCoord;
     normal = normalize(vec3(normalMatrix * vec4(aNormal, 0.0)));
     // current position
-    position = vec3(modelMatrix * worldSpacePos);
+    position = worldSpaceDistortedPos.xyz;
 
     // reflect vector
     vec3 viewVector = normalize(position - camPos);
@@ -52,5 +58,5 @@ void main() {
     // light space matrix
     fragPosLightSpace = lightSpaceMatrix * vec4(position, 1.0);
 
-    gl_Position = camMatrix * vec4(position, 1.0); // PVM * aPos
+    gl_Position = clipSpaceDistortedPos; // camMatrix * vec4(position, 1.0); // PVM * aPos
 }
