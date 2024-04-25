@@ -10,9 +10,11 @@ The texture to the quad is then distorted using a lens distortion shader.
 #### Radial distortion is model using the following equation:
 ```math
 r = sqrt(x^2 + y^2) \\
-
+```
+```math
 x' = x * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
-
+```
+```math
 y' = y * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
 ```
 
@@ -21,7 +23,8 @@ Where k1, k2 and k3 are the radial distortion coefficients.
 #### Tengential distortion is model using the following equation:
 ```math
 x' = x + (2 * p1 * x * y + p2 * (r^2 + 2 * x^2)) \\
-
+```
+```math
 y' = y + (p1 * (r^2 + 2 * y^2) + 2 * p2 * x * y) \\
 ```
 Where p1 and p2 are the tangential distortion coefficients.
@@ -57,38 +60,7 @@ The following image is a demo of the lens distortion simulation.
 Instead of applying the distortion to the texture, the position of each vertex can be moved to simulate the distortion.
 
 The compute the new position of each vertex, we need to apply transformation to get to the clipping coordinates,
-typically done using the projection matrix P:
-```math
-    P = 
-    \begin{bmatrix}
-        \frac{2n}{r-l} & 0 & \frac{r+l}{r-l} & 0 \\
-        0 & \frac{2n}{t-b} & \frac{t+b}{t-b} & 0 \\
-        0 & 0 & -\frac{f+n}{f-n} & -\frac{2fn}{f-n} \\
-        0 & 0 & -1 & 0
-    \end{bmatrix}
-```
-
-Then apply perspective division to normalize the coordinates.
-
-```math
-    x_{ndc} = \frac{x_{clip}}{w_{clip}} \\
-    
-    y_{ndc} = \frac{y_{clip}}{w_{clip}} \\
-    
-    z_{ndc} = \frac{z_{clip}}{w_{clip}} \\
-```
-
-Then we can apply the distortion to the normalized coordinates using the following equation:
-
-```math
-    x_{distorted} = x_{ndc} * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
-    
-    y_{distorted} = y_{ndc} * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
-```
-
-Where k1, k2 and k3 are the radial distortion coefficients and r is the distance from the center of the image to the vertex position.
-
-Then we need to apply the inverse of the perspective division to get the distorted clip coordinates.
+typically done using the projection-view-model (MVP) matrix.
 
 ```math
     \begin{bmatrix}
@@ -97,26 +69,80 @@ Then we need to apply the inverse of the perspective division to get the distort
         z_{clip} \\
         w_{clip}
     \end{bmatrix}
+    = MVP \times
+    \begin{bmatrix}
+        x_{model} \\
+        y_{model} \\
+        z_{model} \\
+        1
+    \end{bmatrix}
+```
+```math
+    MVP = P \times V \times M
+```
+Where P is the projection matrix, V is the view matrix and M is the model matrix.
+
+We then perform division by w to get the normalized device coordinates (NDC).
+
+```math
+    \begin{bmatrix}
+        x_{ndc} \\
+        y_{ndc} \\
+        z_{ndc} \\
+        1
+    \end{bmatrix}
     = 
+    \begin{bmatrix}
+        x_{clip} \\
+        y_{clip} \\
+        z_{clip} \\
+        w_{clip}
+    \end{bmatrix}
+    / w_{clip}
+```
+
+
+Then we can apply the distortion to the normalized coordinates using the following equation:
+
+```math
+    x_{distorted} = x_{ndc} * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
+```
+```math
+    y_{distorted} = y_{ndc} * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
+```
+
+Where k1, k2 and k3 are the radial distortion coefficients and r is the distance from the center of the image to the vertex position.
+
+Once the distortion is applied, we can multiply the distorted coordinates by w to get the clip coordinates.
+
+```math
+    \begin{bmatrix}
+        x_{clip} \\
+        y_{clip} \\
+        z_{clip} \\
+        w_{clip}
+    \end{bmatrix}
+    =
     \begin{bmatrix}
         x_{distorted} \\
         y_{distorted} \\
         z_{distorted} \\
         1
     \end{bmatrix}
-    \times w_{distorted}
+    \times w_{clip}
 ```
 
-Finally, we can apply the inverse of the projection matrix to get the distorted vertex position.
+Finally, we can multiply the clip coordinates by the inverse of the MVP matrix to get the model coordinates.
 
 ```math
     \begin{bmatrix}
-        x_{distorted} \\
-        y_{distorted} \\
-        z_{distorted} \\
-        w_{distorted}
+        x_{model} \\
+        y_{model} \\
+        z_{model} \\
+        1
     \end{bmatrix}
-    = P^{-1} \times
+    =
+    MVP^{-1} \times
     \begin{bmatrix}
         x_{clip} \\
         y_{clip} \\
@@ -125,15 +151,13 @@ Finally, we can apply the inverse of the projection matrix to get the distorted 
     \end{bmatrix}
 ```
 
-Where l, r, t, b, n and f are the left, right, top, bottom, near and far values of the frustum.
-
 ### Pros and Cons
 #### Pros
-- Might be dependent on the polygon resolution of each models present in the scene.
 - Should resolve the unfilled areas in the corners of the image.
 - To be determined ...
 
 #### Cons
+- Might be dependent on the polygon resolution of each models present in the scene.
 - To be determined ...
 
 ### Note
