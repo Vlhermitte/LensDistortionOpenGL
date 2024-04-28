@@ -13,6 +13,9 @@ uniform mat4 camMatrix; // view * projection
 uniform vec3 camPos;
 uniform mat4 lightSpaceMatrix;
 
+uniform vec3 radialDistortionParams;
+uniform vec2 tangentialDistortionParams;
+
 out vec3 position;
 out vec3 color;
 out vec3 normal;
@@ -26,6 +29,15 @@ vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
     return distortionFactor * coord;
 }
 
+vec2 TangentialDistortion(vec2 coord, float p1, float p2) {
+    float x = coord.x;
+    float y = coord.y;
+    float r2 = x * x + y * y;
+    float dx = 2.0 * p1 * x * y + p2 * (r2 + 2.0 * x * x);
+    float dy = p1 * (r2 + 2.0 * y * y) + 2.0 * p2 * x * y;
+    return vec2(dx, dy);
+}
+
 void main() {
     // Apply distortion on the vertex position
     // 1. Apply model matrix to get the world space position
@@ -37,7 +49,9 @@ void main() {
     // 4. Perspective division to get normalized device coordinates
     vec2 ndcPos = clipSpacePos.xy / clipSpacePos.w;
     // 5. Apply radial distortion to the normalized device coordinates
-    vec2 distortedPos = RadialDistortion(ndcPos, 0.1, 0.0, 0.0);
+    vec2 radialDistortionCoords = RadialDistortion(ndcPos, radialDistortionParams.x, radialDistortionParams.y, radialDistortionParams.z);
+    vec2 tangentialDistortionCoords = TangentialDistortion(ndcPos, tangentialDistortionParams.x, tangentialDistortionParams.y);
+    vec2 distortedPos = radialDistortionCoords + tangentialDistortionCoords;
     // 6. Convert back to clip space
     vec4 clipSpaceDistortedPos = vec4(distortedPos * clipSpacePos.w, clipSpacePos.z, clipSpacePos.w);
     // 7. Convert back to view space
