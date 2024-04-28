@@ -1,4 +1,5 @@
 #include "main.h"
+#include "GameState.h"
 
 std::vector<Model> initModels() {
     std::vector<Model> models;
@@ -103,8 +104,16 @@ int main(int argc, char** argv) {
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.5f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
-    camera.AddRadialDistortion(postProcessShader, glm::vec3(0.0f, 0.1f, 0.0f));
-    camera.AddTangentialDistortion(postProcessShader, glm::vec2(0.0f, 0.0f));
+    // Distortion
+    glm::vec3 radialDistortionParams = glm::vec3(0.15f, 0.0f, 0.0f); // k1, k2, k3
+    glm::vec2 tangentialDistortionParams = glm::vec2(0.0f, 0.0f);      // p1, p2
+    if (gameState.preProcessingDistortion) {
+        camera.AddRadialDistortion(defaultShader, radialDistortionParams);
+        camera.AddTangentialDistortion(defaultShader, tangentialDistortionParams);
+    } else if (gameState.postProcessingDistortion) {
+        camera.AddRadialDistortion(postProcessShader, radialDistortionParams);
+        camera.AddTangentialDistortion(postProcessShader, tangentialDistortionParams);
+    }
 
     // Time
     float previousTime = 0.0f;

@@ -44,7 +44,8 @@ add_library(engine
 add_executable(${PROJECT_NAME} src/main.cpp HeaderFile/main.h
         src/Camera.cpp HeaderFile/Camera.h
         include/stb/stb.cpp include/stb/stb_image.h include/stb/stb_image_write.h
-        ${HEADER_FILES})
+        ${HEADER_FILES}
+        HeaderFile/GameState.h)
 
 # Link engine library
 target_link_libraries(${PROJECT_NAME} engine)
