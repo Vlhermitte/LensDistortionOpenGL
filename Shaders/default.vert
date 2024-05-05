@@ -65,7 +65,7 @@ void main() {
         position = worldSpaceDistortedPos.xyz;
         gl_Position = clipSpaceDistortedPos;
     } else {
-        position = aPos;
+        position = vec3(modelMatrix * vec4(aPos, 1.0));
         gl_Position = camMatrix * vec4(position, 1.0);
     }
 
