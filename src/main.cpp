@@ -96,11 +96,14 @@ int main(int argc, char** argv) {
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "usePreProcessDistortion"), gameState.preProcessingDistortion);
     defaultShader.Deactivate();
+    CHECK_GL_ERROR();
 
     lightShader.Activate();
     glUniform4fv(glGetUniformLocation(lightShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     lightShader.Deactivate();
+    CHECK_GL_ERROR();
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.5f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
