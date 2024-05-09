@@ -110,6 +110,7 @@ Then we can apply the distortion to the normalized coordinates using the followi
 Radial distortion:
 ```math
     r = sqrt(x_{ndc}^2 + y_{ndc}^2) \\
+```
 ```math
     x_{distorted} = x_{ndc} * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6) \\
 ```
@@ -179,7 +180,7 @@ The following image is a demo of the lens distortion simulation using the second
 - Dependent on the polygon resolution of each models present in the scene.
 - To be determined ...
 
-To solve the dependency on the polygon resolution, we can use a geometry shader to increase the number of vertices of each polygon.
+To solve the dependency on the polygon resolution, we can use a geometry shader or tesselation shader to increase the number of vertices of each polygon.
 That way we don't need to load high-resolution models at the start of the application.
 
 #### Note
