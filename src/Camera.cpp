@@ -65,7 +65,7 @@ void Camera::TakeScreenshot(GLFWwindow *window, const char* filename) {
     stbi_write_png(filepath.c_str(), windowsWidth, windowHeight, 3, data, 0);
     delete[] data;
 
-    std::cout << "Screenshot taken" << std::endl;
+    std::cout << "Screenshot" << filename <<"taken" << std::endl;
 }
 
 void Camera::Inputs(GLFWwindow *window) {
@@ -167,19 +167,30 @@ void Camera::handleKeyboard(GLFWwindow *window) {
     // Get image from OpenGL
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
         // Save camera parameters to a file
+        auto timestamp = std::chrono::system_clock::now();
+        auto timestamp_c = std::chrono::system_clock::to_time_t(timestamp);
+        auto screenshotName = std::string("screenshot_") + std::to_string(timestamp_c) + ".png";
         std::ofstream file;
-        file.open("../Screenshots/camera.csv");
-        file << "x;y;z;" << "yaw;pitch;roll;" << "Up_x;Up_y;Up_z;" << "k1;k2;k3;p1;p2;" << "FOV (deg);" << "Projection Matrix;" << "Screenshot" << std::endl;
-        file << Position.x << ";" << Position.y << ";" << Position.z << ";";
-        file << Orientation.x << ";" << Orientation.y << ";" << Orientation.z << ";";
-        file << UpVector.x << ";" << UpVector.y << ";" << UpVector.z << ";";
-        file << radialDistortionParams.x << ";" << radialDistortionParams.y << ";" << radialDistortionParams.z << ";" << tangentialDistortionParams.x << ";" << tangentialDistortionParams.y << ";";
-        file << FOVdeg << ";";
-        file << "screenshot0.png";
-        file << std::endl;
+        file.open("../Screenshots/cameras_parameters.csv", std::ios_base::app);
+        // Check if header is needed
+        if (file.tellp() == 0) {
+            file << "x;y;z;" << "yaw;pitch;roll;" << "Up_x;Up_y;Up_z;" << "k1;k2;k3;p1;p2;" << "FOV (deg);" << "Screenshot" << std::endl;
+        }
+        // Go to the end of the file
+        file.seekp(0, std::ios_base::end);
+
+        // Append camera parameters to the file
+        file << Position.x << ";" << Position.y << ";" << Position.z << ";"
+             << Orientation.x << ";" << Orientation.y << ";" << Orientation.z << ";"
+             << UpVector.x << ";" << UpVector.y << ";" << UpVector.z << ";"
+             << radialDistortionParams.x << ";" << radialDistortionParams.y << ";" << radialDistortionParams.z << ";"
+             << tangentialDistortionParams.x << ";" << tangentialDistortionParams.y << ";"
+             << FOVdeg << ";"
+             << screenshotName << std::endl;
+
         file.close();
 
         // Takes a screenshot
-        TakeScreenshot(window, "screenshot0.png");
+        TakeScreenshot(window, screenshotName.c_str());
     }
 }
