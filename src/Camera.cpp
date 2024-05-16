@@ -175,15 +175,6 @@ void Camera::handleKeyboard(GLFWwindow *window) {
         file << UpVector.x << ";" << UpVector.y << ";" << UpVector.z << ";";
         file << radialDistortionParams.x << ";" << radialDistortionParams.y << ";" << radialDistortionParams.z << ";" << tangentialDistortionParams.x << ";" << tangentialDistortionParams.y << ";";
         file << FOVdeg << ";";
-        file << "[";
-        for (int i = 0; i < 4; i++) {
-            file << "[";
-            for (int j = 0; j < 4; j++) {
-                file << projectionMatrix[i][j] << ",";
-            }
-            file << "]";
-        }
-        file << "];";
         file << "screenshot0.png";
         file << std::endl;
         file.close();
