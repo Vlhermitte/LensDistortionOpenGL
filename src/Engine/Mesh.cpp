@@ -38,6 +38,7 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
     unsigned int numDiffuse = 0;
     unsigned int numSpecular = 0;
     unsigned int numNormal = 0;
+    unsigned int numRoughness = 0;
 
     for (unsigned int i = 0; i < textures.size(); i++) {
         std::string number;
@@ -48,6 +49,8 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
             number = std::to_string(numSpecular++);
         } else if (type == "normal") {
             number = std::to_string(numNormal++);
+        } else if (type == "roughness" || type == "metallic" || type == "ao" || type == "reflection") {
+            number = std::to_string(numRoughness++);
         }
         textures[i].texUnit(shader, (type + number).c_str(), i);
         textures[i].Bind();
@@ -57,6 +60,7 @@ void Mesh::Draw(Shader& shader, Camera& camera, glm::mat4 modelMatrix) {
     glUniform3f(glGetUniformLocation(shader.ID, "material.diffuse"), material.diffuse.x, material.diffuse.y, material.diffuse.z);
     glUniform3f(glGetUniformLocation(shader.ID, "material.specular"), material.specular.x, material.specular.y, material.specular.z);
     glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), material.shininess);
+    glUniform1f(glGetUniformLocation(shader.ID, "material.roughness"), material.roughness);
     CHECK_GL_ERROR();
 
     glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);

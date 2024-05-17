@@ -21,6 +21,7 @@ typedef struct material {      // structure that describes currently used materi
     glm::vec3  diffuse;       // diffuse component
     glm::vec3  specular;      // specular component
     float shininess;     // sharpness of specular reflection
+    float roughness;
     bool  useTexture;    // defines whether the texture is used or not
 } Material;
 

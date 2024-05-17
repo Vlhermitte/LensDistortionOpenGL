@@ -172,6 +172,23 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, const std::s
     } else {
         std::cout << "No normal texture" << std::endl;
     }
+    if (material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS) != 0) {
+        for (int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS); i++) {
+            aiString path;
+            material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, i, &path);
+            std::string textureName = path.data;
+            size_t found = fileName.find_last_of("/\\");
+            if (found != std::string::npos) { // If found
+                textureName.insert(0, fileName.substr(0, found + 1));
+            }
+            std::cout << "Loading roughness file: " << textureName << std::endl;
+            Texture texture(textureName.c_str(), "roughness", 3);
+            textures.push_back(texture);
+        }
+    } else {
+        std::cout << "No roughness texture" << std::endl;
+    }
+
     return textures;
 }
 
@@ -195,6 +212,11 @@ Material Model::getMaterials(const aiMaterial *material) {
         mat.shininess = shininess;
     else
         mat.shininess = 32.0f; // Default value
+    float roughness;
+    if (AI_SUCCESS == material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness))
+        mat.roughness = roughness;
+    else
+        mat.roughness = 0.5f; // Default value
 
     mat.useTexture = false;
     return mat;

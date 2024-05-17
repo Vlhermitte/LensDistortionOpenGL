@@ -19,6 +19,7 @@ struct Material {      // structure that describes currently used material
     vec3  diffuse;       // diffuse component
     vec3  specular;      // specular component
     float shininess;     // sharpness of specular reflection
+    float roughness;     // roughness of the material
     bool  useTexture;    // defines whether the texture is used or not
 };
 
@@ -35,6 +36,7 @@ uniform sampler2D shadowMap;
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 uniform sampler2D normal0;
+// uniform sampler2D roughness0; // Buggy  fix this
 
 // Lighting
 uniform vec3 lightPos;
@@ -168,7 +170,9 @@ void main() {
 
     // skybox
     vec4 reflectedColor = texture(skybox, reflectedVector);
-    outputColor = mix(outputColor, reflectedColor, 0.3f);
+    // mix skybox and object color depending on the material roughness
+    // float roughness = texture(roughness0, texCoord).r; // Buggy fix this
+    outputColor = mix(outputColor, reflectedColor, material.roughness);
 
     FragColor = outputColor;
 }
