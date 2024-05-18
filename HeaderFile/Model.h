@@ -18,6 +18,7 @@ private:
     std::string directory;
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 
     bool loadModel(std::string filename);
     static std::vector<Vertex> getVertices(const aiMesh *mesh);
@@ -29,6 +30,7 @@ public:
 
     void setPosition(glm::vec3 position);
     void setScale(glm::vec3 scale);
+    void setRotation(glm::vec3 rotation);
 
     void Draw(Shader shader, Camera camera);
     void Delete() const;
