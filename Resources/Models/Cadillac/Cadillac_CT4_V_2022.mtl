@@ -6,8 +6,11 @@ Ka 0.469512 0.469512 0.469512
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
+Pr 0.200000
 illum 3
 map_Kd Maps/Cadillac_CT4_V_2022_lambert6_BaseColor-6.png
 map_Ks Maps/Cadillac_CT4_V_2022_lambert6_Specular.png
-map_Kn Maps/Cadillac_CT4_V_2022_lambert6_Normal.png
+norm Maps/Cadillac_CT4_V_2022_lambert6_Normal.png
 map_Ns Maps/Cadillac_CT4_V_2022_lambert6_Roughness.png
+# map_Pr Maps/Cadillac_CT4_V_2022_lambert6_Roughness.png
+# map_Pm Maps/Cadillac_CT4_V_2022_lambert6_Metalness.png

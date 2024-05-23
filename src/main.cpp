@@ -9,22 +9,28 @@ std::vector<Model> initModels() {
     floor.setScale(glm::vec3(1.0f, 1.0f, 1.0f));
     models.emplace_back(floor);
 
+    Model Cottage("../Resources/Models/Cottage/Cottage_FREE.obj");
+    Cottage.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    Cottage.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+    models.emplace_back(Cottage);
+
     // RaceCar
     Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
-    raceCar.setPosition(glm::vec3(1.5f, 0.0f, 0.5f));
+    raceCar.setPosition(glm::vec3(1.5f, 0.0f, 3.2f));
     raceCar.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+    raceCar.setRotation(glm::vec3(0.0f, 40.0f, 0.0f));
     models.emplace_back(raceCar);
 
     // Cadillac
     Model cadillac("../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
-    cadillac.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    cadillac.setPosition(glm::vec3(-0.8f, 0.0f, 4.0f));
     cadillac.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(cadillac);
 
-    // Sun
+    // Sun Model
     Model sun("../Resources/Models/Sun/Sun.obj");
-    sun.setPosition(glm::vec3(1.0f, 0.5f, 0.0f));
-    sun.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+    sun.setPosition(glm::vec3(8.0f, 8.0f, 8.0f));
+    sun.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
     models.emplace_back(sun);
 
     return models;
@@ -88,14 +94,15 @@ int main(int argc, char** argv) {
     std::vector<Model> models = initModels();
 
     glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    glm::vec3 sunPos = models[3].getPosition();
+    // Sun Position is the last model in the models vector
+    glm::vec3 sunPos = models.back().getPosition();
 
     defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), true);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePreProcessDistortion"), gameState.preProcessingDistortion);
     defaultShader.Deactivate();
     CHECK_GL_ERROR();
@@ -106,9 +113,9 @@ int main(int argc, char** argv) {
     CHECK_GL_ERROR();
 
     // Camera
-    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.5f, 2.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
+    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 1.0f, 5.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
     // Distortion
-    glm::vec3 radialDistortionParams = glm::vec3(0.15f, 0.0f, 0.0f); // k1, k2, k3
+    glm::vec3 radialDistortionParams = glm::vec3(0.0f, 0.0f, 0.0f); // k1, k2, k3
     glm::vec2 tangentialDistortionParams = glm::vec2(0.0f, 0.0f);      // p1, p2
     if (gameState.preProcessingDistortion) {
         camera.AddRadialDistortion(defaultShader, radialDistortionParams);
