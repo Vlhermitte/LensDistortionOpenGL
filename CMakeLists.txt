@@ -2,8 +2,40 @@ cmake_minimum_required(VERSION 3.27)
 project(LensDistortionOpenGL)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
+# Package Finder Functions
+function(find_package_and_message package)
+    find_package(PkgConfig REQUIRED)
+    if (PKG_CONFIG_FOUND)
+        pkg_check_modules(${package} REQUIRED ${package})
+    else ()
+        find_package(${package} REQUIRED)
+    endif ()
+    if (${package}_FOUND)
+        message(STATUS "Found ${package} in ${${package}_INCLUDE_DIRS}")
+    else ()
+        message(FATAL_ERROR "${package} not found")
+    endif ()
+endfunction()
+
+# Find packages
+set(OpenGL_GL_PREFERENCE "GLVND")
+find_package(OpenGL REQUIRED)
+if (OPENGL_FOUND)
+    message(STATUS "Found OpenGL in ${OPENGL_INCLUDE_DIR}")
+else ()
+    message(FATAL_ERROR "OpenGL not found")
+endif ()
+
+find_package_and_message(GLFW3)
+find_package_and_message(GLEW)
+find_package_and_message(GLM)
+find_package_and_message(ASSIMP)
 
 link_directories(${CMAKE_SOURCE_DIR}/lib)
+link_directories(${GLFW3_LIBRARY_DIRS} ${GLEW_LIBRARY_DIRS} ${ASSIMP_LIBRARY_DIRS})
+
 
 # Find DLLs
 if (WIN32)
@@ -16,10 +48,11 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/Engine
         ${CMAKE_SOURCE_DIR}/Shaders
-        ${CMAKE_SOURCE_DIR}/include/GLFW
-        ${CMAKE_SOURCE_DIR}/include/GLEW
-        ${CMAKE_SOURCE_DIR}/include/GLM
         ${CMAKE_SOURCE_DIR}/include
+        ${GLFW3_INCLUDE_DIRS}
+        ${GLEW_INCLUDE_DIRS}
+        ${GLM_INCLUDE_DIRS}
+        ${ASSIMP_INCLUDE_DIRS}
 )
 
 file(GLOB_RECURSE HEADER_FILES
@@ -39,51 +72,26 @@ add_library(engine
         src/Engine/Framebuffer.cpp
 )
 
-
 # Add executable
 add_executable(${PROJECT_NAME} src/main.cpp HeaderFile/main.h
         src/Camera.cpp HeaderFile/Camera.h
         include/stb/stb.cpp include/stb/stb_image.h include/stb/stb_image_write.h
         ${HEADER_FILES}
-        HeaderFile/GameState.h)
-
-# Link engine library
-target_link_libraries(${PROJECT_NAME} engine)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
-# Find packages
-set(OpenGL_GL_PREFERENCE "GLVND")
-find_package(OpenGL REQUIRED)
-
-# Find GLFW
-find_package(GLFW3 REQUIRED)
-message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
-
-# Find GLEW
-find_package(GLEW REQUIRED)
-message(STATUS "Found GLEW in ${GLEW_INCLUDE_DIR}")
-
-# Find GLM
-find_package(GLM REQUIRED)
-message(STATUS "Found GLM in ${GLM_INCLUDE_DIR}")
-
-# Find ASSIMP
-find_package(ASSIMP REQUIRED)
-message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
+        HeaderFile/GameState.h
+)
 
 
 # Link libraries
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY} assimp)
-elseif (UNIX AND NOT APPLE)
-    target_link_libraries(${PROJECT_NAME} glfw GLEW GL assimp)
+if (WIN32 OR UNIX AND NOT APPLE)
+    target_link_libraries(${PROJECT_NAME} engine
+            ${OPENGL_LIBRARIES} ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES}
+    )
 elseif (APPLE)
-    target_link_libraries(${PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo" glfw GLEW assimp)
+    target_link_libraries(${PROJECT_NAME} engine
+            "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo"
+            ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES}
+    )
 endif ()
 
 # Define GL_SILENCE_DEPRECATION to silence deprecation warnings
 target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)
-
-
-
