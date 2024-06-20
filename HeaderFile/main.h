@@ -18,5 +18,6 @@
 #include "Skybox.h"
 #include "ShadowMap.h"
 #include "Framebuffer.h"
+#include "GUI.h"
 
 #endif //OPENGLPROJECT_MAIN_H

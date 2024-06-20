@@ -47,6 +47,8 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/HeaderFile
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/Engine
+        ${CMAKE_SOURCE_DIR}/HeaderFile/
+        ${CMAKE_SOURCE_DIR}/HeaderFile/Engine
         ${CMAKE_SOURCE_DIR}/Shaders
         ${CMAKE_SOURCE_DIR}/include
         ${GLFW3_INCLUDE_DIRS}
@@ -55,39 +57,36 @@ include_directories(
         ${ASSIMP_INCLUDE_DIRS}
 )
 
-file(GLOB_RECURSE HEADER_FILES
-        ${CMAKE_SOURCE_DIR}/HeaderFile/*.h
-        ${CMAKE_SOURCE_DIR}/HeaderFile/*.hpp)
+file(GLOB_RECURSE SOURCES
+        ${CMAKE_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_SOURCE_DIR}/include/stb/*.cpp
+        ${CMAKE_SOURCE_DIR}/include/imgui/*.cpp)
 
-add_library(engine
-        src/Engine/Shader.cpp
-        src/Engine/VBO.cpp
-        src/Engine/EBO.cpp
-        src/Engine/VAO.cpp
-        src/Engine/Texture.cpp
-        src/Engine/Mesh.cpp
-        src/Engine/Model.cpp
-        src/Engine/Skybox.cpp
-        src/Engine/ShadowMap.cpp
-        src/Engine/Framebuffer.cpp
-)
+file(GLOB_RECURSE HEADERS
+        ${CMAKE_SOURCE_DIR}/HeaderFile/*.h
+        ${CMAKE_SOURCE_DIR}/HeaderFile/*.hpp
+        ${CMAKE_SOURCE_DIR}/include/stb/*.h
+        ${CMAKE_SOURCE_DIR}/include/stb/*.hpp
+        ${CMAKE_SOURCE_DIR}/include/imgui/*.h
+        ${CMAKE_SOURCE_DIR}/include/imgui/*.hpp)
+
 
 # Add executable
-add_executable(${PROJECT_NAME} src/main.cpp HeaderFile/main.h
-        src/Camera.cpp HeaderFile/Camera.h
-        include/stb/stb.cpp include/stb/stb_image.h include/stb/stb_image_write.h
-        ${HEADER_FILES}
+add_executable(${PROJECT_NAME}
+        src/main.cpp
+        ${SOURCES}
+        ${HEADERS}
         HeaderFile/GameState.h
 )
 
 
 # Link libraries
 if (WIN32 OR UNIX AND NOT APPLE)
-    target_link_libraries(${PROJECT_NAME} engine
+    target_link_libraries(${PROJECT_NAME}
             ${OPENGL_LIBRARIES} ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES}
     )
 elseif (APPLE)
-    target_link_libraries(${PROJECT_NAME} engine
+    target_link_libraries(${PROJECT_NAME}
             "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo"
             ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES}
     )

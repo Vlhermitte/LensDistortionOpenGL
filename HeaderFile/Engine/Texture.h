@@ -6,7 +6,7 @@
 #define OPENGLPROJECT_TEXTURE_H
 
 #include <GL/glew.h>
-#include <stb/stb_image.h>
+#include "stb/stb_image.h"
 #include <string>
 
 #include "Shader.h"
