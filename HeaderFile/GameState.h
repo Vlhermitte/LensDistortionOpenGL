@@ -5,8 +5,7 @@
 // File for the game state
 
 typedef struct gameState {
-    bool preProcessingDistortion = true; // Set to TRUE to enable preprocessing distortion
-    bool postProcessingDistortion = false; // Set to TRUE to enable postprocessing distortion
+    bool preProcessingDistortion = true; // TRUE to enable preprocessing distortion FALSE to enable postprocessing distortion
 } GameState;
 
 GameState gameState;

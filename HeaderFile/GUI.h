@@ -21,7 +21,8 @@ public:
     void DisableMouse(Camera& camera);
     void Shutdown();
 
-    glm::vec3 DistortionSlider();
+    bool DistortionModeSwitch();
+    std::pair<glm::vec3, glm::vec2> DistortionSlider();
 };
 
 #endif //LENSDISTORTIONOPENGL_GUI_H

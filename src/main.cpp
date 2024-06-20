@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
         if (gameState.preProcessingDistortion) {
             camera.RenderRadialDistortion(defaultShader);
             camera.RenderTangentialDistortion(defaultShader);
-        } else if (gameState.postProcessingDistortion) {
+        } else {
             camera.RenderRadialDistortion(postProcessShader);
             camera.RenderTangentialDistortion(postProcessShader);
         }
@@ -210,7 +210,11 @@ int main(int argc, char** argv) {
         gui.NewFrame();
 
         // Camera Distortion Parameters retrieval from GUI
-        camera.setRadialDistortionParams(gui.DistortionSlider());
+
+        gameState.preProcessingDistortion = gui.DistortionModeSwitch();
+        auto distortionParams = gui.DistortionSlider();
+        camera.setRadialDistortionParams(distortionParams.first);
+        camera.setTangentialDistortionParams(distortionParams.second);
 
         gui.Render();
         gui.DisableMouse(camera);

@@ -2,6 +2,7 @@
 
 #include "GUI.h"
 
+
 // Define the static variable
 ImGuiIO* GUI::io = nullptr;
 
@@ -48,18 +49,37 @@ void GUI::Shutdown() {
     ImGui::DestroyContext();
 }
 
-glm::vec3 GUI::DistortionSlider() {
+bool GUI::DistortionModeSwitch() {
     // Set the next window size
-    ImGui::Begin("Radial Distortion Parameters");
-    ImVec2 windowSize = ImVec2(100, 300);
+    ImGui::Begin("Lens Distortion Parameters");
+    ImVec2 windowSize = ImVec2(150, 300);
     ImGui::SetNextWindowSize(windowSize, ImGuiCond_FirstUseEver);
 
-    static glm::vec3 radialDistortionParam = glm::vec3(0.0f, 0.0f, 0.0f);
-    ImGui::SliderFloat("k1", &radialDistortionParam.x, 0.0f, 1.0f);
-    ImGui::SliderFloat("k2", &radialDistortionParam.y, 0.0f, 1.0f);
-    ImGui::SliderFloat("k3", &radialDistortionParam.z, 0.0f, 1.0f);
+    static bool distortionMode = true;
+    // Checked by default
+    ImGui::Checkbox("Pre Processing Mode", &distortionMode);
 
     ImGui::End();
 
-    return radialDistortionParam;
+    return distortionMode;
 }
+
+std::pair<glm::vec3, glm::vec2> GUI::DistortionSlider() {
+    // Set the next window size
+    ImGui::Begin("Lens Distortion Parameters");
+
+    static glm::vec3 radialDistortionParams = glm::vec3(0.0f, 0.0f, 0.0f);
+    ImGui::SliderFloat("k1", &radialDistortionParams.x, -0.4f, 0.4f);
+    ImGui::SliderFloat("k2", &radialDistortionParams.y, -0.4f, 0.4f);
+    ImGui::SliderFloat("k3", &radialDistortionParams.z, -0.4f, 0.4f);
+
+    static glm::vec2 tangentialDistortionParams = glm::vec2(0.0f, 0.0f);
+    ImGui::SliderFloat("p1", &tangentialDistortionParams.x, -0.4f, 0.4f);
+    ImGui::SliderFloat("p2", &tangentialDistortionParams.y, -0.4f, 0.4f);
+
+    ImGui::End();
+
+    return std::make_pair(radialDistortionParams, tangentialDistortionParams);
+}
+
+
