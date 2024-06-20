@@ -36,6 +36,7 @@ private:
     float speed = 0.01f;
     float sensitivity = 100.0f;
     bool wireframeMode = false;
+    bool mouseEnabled = true;
 
     void handleMovement(GLFWwindow* window);
     void handleMouse(GLFWwindow* window);
@@ -45,15 +46,24 @@ public:
     Camera(int width, int height, glm::vec3 position);
     void updateMatrix(float FOVdeg, float nearPlane, float farPlane);
     void Matrix(Shader& shader, const char* uniform);
-    void AddRadialDistortion(Shader& shader, glm::vec3 distParams);
-    void AddTangentialDistortion(Shader& shader, glm::vec2 distParams);
+    void RenderRadialDistortion(Shader& shader);
+    void RenderTangentialDistortion(Shader& shader);
 
+    // Setter
+    void setRadialDistortionParams(glm::vec3 radialDistortionParams);
+    void setTangentialDistortionParams(glm::vec2 tangentialDistortionParams);
+
+    // Getter
+    glm::vec3 getRadialDistortionParams();
+    glm::vec2 getTangentialDistortionParams();
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix();
     bool IsWireframeMode();
 
     void TakeScreenshot(GLFWwindow *window, const char* filename);
     void Inputs(GLFWwindow* window);
+    void EnableMouse();
+    void DisableMouse();
 };
 
 

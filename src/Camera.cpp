@@ -28,18 +28,32 @@ void Camera::Matrix(Shader& shader, const char* uniform) {
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 }
 
-void Camera::AddRadialDistortion(Shader &shader, glm::vec3 distParams) {
-    radialDistortionParams = distParams;
+void Camera::RenderRadialDistortion(Shader &shader) {
     shader.Activate();
-    glUniform3fv(glGetUniformLocation(shader.ID, "radialDistortionParams"), 1, glm::value_ptr(distParams));
+    glUniform3fv(glGetUniformLocation(shader.ID, "radialDistortionParams"), 1, glm::value_ptr(radialDistortionParams));
     shader.Deactivate();
 }
 
-void Camera::AddTangentialDistortion(Shader& shader, glm::vec2 distParams) {
-    tangentialDistortionParams = distParams;
+void Camera::RenderTangentialDistortion(Shader& shader) {
     shader.Activate();
-    glUniform2fv(glGetUniformLocation(shader.ID, "tangentialDistortionParams"), 1, glm::value_ptr(distParams));
+    glUniform2fv(glGetUniformLocation(shader.ID, "tangentialDistortionParams"), 1, glm::value_ptr(tangentialDistortionParams));
     shader.Deactivate();
+}
+
+void Camera::setRadialDistortionParams(glm::vec3 radialDistortionParams) {
+    this->radialDistortionParams = radialDistortionParams;
+}
+
+void Camera::setTangentialDistortionParams(glm::vec2 tangentialDistortionParams) {
+    this->tangentialDistortionParams = tangentialDistortionParams;
+}
+
+glm::vec3 Camera::getRadialDistortionParams() {
+    return radialDistortionParams;
+}
+
+glm::vec2 Camera::getTangentialDistortionParams() {
+    return tangentialDistortionParams;
 }
 
 glm::mat4 Camera::GetViewMatrix() {
@@ -74,6 +88,14 @@ void Camera::Inputs(GLFWwindow *window) {
     handleKeyboard(window);
 }
 
+void Camera::EnableMouse() {
+    mouseEnabled = true;
+}
+
+void Camera::DisableMouse() {
+    mouseEnabled = false;
+}
+
 void Camera::handleMovement(GLFWwindow *window) {
     // Player Movements (QUERTY)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -104,7 +126,7 @@ void Camera::handleMovement(GLFWwindow *window) {
 
 void Camera::handleMouse(GLFWwindow *window) {
     // Mouse Movements
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    if (mouseEnabled && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         // Hides mouse cursor
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 

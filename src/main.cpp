@@ -87,7 +87,6 @@ int main(int argc, char** argv) {
     Shader shadowMapShader("../Shaders/shadowMap.vert", "../Shaders/shadowMap.frag");
     Shader postProcessShader("../Shaders/postProcessShader.vert", "../Shaders/postProcessShader.frag");
 
-
     // Skybox
     Skybox skybox = initSkybox();
     // Models
@@ -114,16 +113,6 @@ int main(int argc, char** argv) {
 
     // Camera
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 1.0f, 5.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
-    // Distortion
-    glm::vec3 radialDistortionParams = glm::vec3(0.0f, 0.0f, 0.0f); // k1, k2, k3
-    glm::vec2 tangentialDistortionParams = glm::vec2(0.0f, 0.0f);      // p1, p2
-    if (gameState.preProcessingDistortion) {
-        camera.AddRadialDistortion(defaultShader, radialDistortionParams);
-        camera.AddTangentialDistortion(defaultShader, tangentialDistortionParams);
-    } else if (gameState.postProcessingDistortion) {
-        camera.AddRadialDistortion(postProcessShader, radialDistortionParams);
-        camera.AddTangentialDistortion(postProcessShader, tangentialDistortionParams);
-    }
 
     // Time
     float previousTime = 0.0f;
@@ -145,6 +134,9 @@ int main(int argc, char** argv) {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
+    // GUI
+    GUI gui(window);
+
     while (!glfwWindowShouldClose(window)) {
         currentTime = glfwGetTime();
         deltaTime = currentTime - previousTime;
@@ -164,6 +156,15 @@ int main(int argc, char** argv) {
 
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        // Sending the camera distortion parameters to the shader
+        if (gameState.preProcessingDistortion) {
+            camera.RenderRadialDistortion(defaultShader);
+            camera.RenderTangentialDistortion(defaultShader);
+        } else if (gameState.postProcessingDistortion) {
+            camera.RenderRadialDistortion(postProcessShader);
+            camera.RenderTangentialDistortion(postProcessShader);
+        }
 
         camera.updateMatrix(60.0f, 0.1f, 100.0f);
 
@@ -205,6 +206,15 @@ int main(int argc, char** argv) {
 
         framebuffer.Draw(postProcessShader);
 
+        // GUI Rendering (We have to render it after the framebuffer has been drawn, otherwise the GUI will not be visible)
+        gui.NewFrame();
+
+        // Camera Distortion Parameters retrieval from GUI
+        camera.setRadialDistortionParams(gui.DistortionSlider());
+
+        gui.Render();
+        gui.DisableMouse(camera);
+
         if (camera.IsWireframeMode()) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // Go back to camera wireframe mode
         }
@@ -215,6 +225,7 @@ int main(int argc, char** argv) {
     }
 
     // Clean up
+    gui.Shutdown();
     defaultShader.Delete();
     lightShader.Delete();
     skyboxShader.Delete();
