@@ -43,8 +43,6 @@ if (uname -a | grep -q "Darwin"); then
     brew install glm
     # install GLEW
     brew install glew
-    # install GL
-    brew install gl
     # install Assimp
     brew install assimp
 fi # end mac
