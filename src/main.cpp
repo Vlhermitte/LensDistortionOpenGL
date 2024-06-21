@@ -210,7 +210,6 @@ int main(int argc, char** argv) {
         gui.NewFrame();
 
         // Camera Distortion Parameters retrieval from GUI
-
         gameState.preProcessingDistortion = gui.DistortionModeSwitch();
         auto distortionParams = gui.DistortionSlider();
         camera.setRadialDistortionParams(distortionParams.first);

@@ -14,6 +14,9 @@
 class GUI {
 private:
     static ImGuiIO* io;
+    bool distortionMode = false;
+    glm::vec3 radialDistortionParams = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec2 tangentialDistortionParams = glm::vec2(0.0f, 0.0f);
 public:
     explicit GUI(GLFWwindow* window);
     void NewFrame();
