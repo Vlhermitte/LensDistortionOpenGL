@@ -174,17 +174,17 @@ The following image is a demo of the lens distortion simulation using the second
 #### Pros and Cons
 ##### Pros
 - Should resolve the unfilled areas in the corners of the image.
-- To be determined ...
 
 ##### Cons
 - Dependent on the polygon resolution of each models present in the scene.
-- To be determined ...
+- Slower to compute, since we need to recompute the position of each vertex.
 
 To solve the dependency on the polygon resolution, we can use a geometry shader or tesselation shader to increase the number of vertices of each polygon.
 That way we don't need to load high-resolution models at the start of the application.
 
 #### Note
-This approach need further investigation to check its validity. And find its pros and cons.
+There is a bug in the second approach, negative values of k1, k2 and k3 cause an incorrect movement of some vertices.
+It needs further investigation.
 
 ---
 ### Dependencies
@@ -193,9 +193,13 @@ This approach need further investigation to check its validity. And find its pro
 - GLEW
 - GLM
 - stb_image
+- ImGUI
 - Assimp
 
 You can install the dependencies using setup.bash script.
+```bash
+bash setup.bash
+```
 
 ---
 ## License
