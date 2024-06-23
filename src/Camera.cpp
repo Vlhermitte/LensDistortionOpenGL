@@ -7,14 +7,14 @@ Camera::Camera(int width, int height, glm::vec3 position) {
     this->height = height;
 }
 
-void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
+void Camera::updateMatrix(float fovDegrees, float nearPlane, float farPlane) {
     // Initializes matrices since otherwise they will be the null matrix
-    this->FOVdeg = FOVdeg;
+    this->FOVdeg = fovDegrees;
 
     // Makes camera look in the right direction from the right position
     viewMatrix = glm::lookAt(Position, Position + Orientation, UpVector);
     // Adds perspective to the scene
-    projectionMatrix = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
+    projectionMatrix = glm::perspective(glm::radians(fovDegrees), (float)width / height, nearPlane, farPlane);
 
     // Sets new camera matrix
     cameraMatrix = projectionMatrix * viewMatrix;
@@ -40,12 +40,12 @@ void Camera::RenderTangentialDistortion(Shader& shader) {
     shader.Deactivate();
 }
 
-void Camera::setRadialDistortionParams(glm::vec3 radialDistortionParams) {
-    this->radialDistortionParams = radialDistortionParams;
+void Camera::setRadialDistortionParams(glm::vec3 distortionParams) {
+    this->radialDistortionParams = distortionParams;
 }
 
-void Camera::setTangentialDistortionParams(glm::vec2 tangentialDistortionParams) {
-    this->tangentialDistortionParams = tangentialDistortionParams;
+void Camera::setTangentialDistortionParams(glm::vec2 distortionParams) {
+    this->tangentialDistortionParams = distortionParams;
 }
 
 glm::vec3 Camera::getRadialDistortionParams() {
@@ -71,7 +71,7 @@ bool Camera::IsWireframeMode() {
 void Camera::TakeScreenshot(GLFWwindow *window, const char* filename) {
     int windowsWidth, windowHeight;
     glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
-    unsigned char *data = new unsigned char[3 * windowsWidth * windowHeight];
+    auto *data = new unsigned char[3 * windowsWidth * windowHeight];
     glReadPixels(0, 0, windowsWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
     // Flip the image
     stbi_flip_vertically_on_write(true);

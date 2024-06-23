@@ -45,14 +45,14 @@ private:
 public:
     glm::vec3 Position{};
     Camera(int width, int height, glm::vec3 position);
-    void updateMatrix(float FOVdeg, float nearPlane, float farPlane);
+    void updateMatrix(float fovDegrees, float nearPlane, float farPlane);
     void Matrix(Shader& shader, const char* uniform);
     void RenderRadialDistortion(Shader& shader);
     void RenderTangentialDistortion(Shader& shader);
 
     // Setter
-    void setRadialDistortionParams(glm::vec3 radialDistortionParams);
-    void setTangentialDistortionParams(glm::vec2 tangentialDistortionParams);
+    void setRadialDistortionParams(glm::vec3 distortionParams);
+    void setTangentialDistortionParams(glm::vec2 distortionParams);
 
     // Getter
     glm::vec3 getRadialDistortionParams();
