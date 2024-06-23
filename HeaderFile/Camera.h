@@ -15,6 +15,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <stb/stb_image_write.h>
+#include <chrono>
 
 #include "Shader.h"
 
