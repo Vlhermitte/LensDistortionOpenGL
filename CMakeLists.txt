@@ -49,6 +49,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/src/Engine
         ${CMAKE_SOURCE_DIR}/HeaderFile/
         ${CMAKE_SOURCE_DIR}/HeaderFile/Engine
+        ${CMAKE_SOURCE_DIR}/HeaderFile/GUI
         ${CMAKE_SOURCE_DIR}/Shaders
         ${CMAKE_SOURCE_DIR}/include
         ${GLFW3_INCLUDE_DIRS}
