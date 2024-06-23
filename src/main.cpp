@@ -206,15 +206,26 @@ int main(int argc, char** argv) {
 
         framebuffer.Draw(postProcessShader);
 
+        // Dataset Generation (this has to be put here to avoid having the GUI in the images)
+        if (gameState.datasetGenProcedure) {
+            camera.GenerateDataset(window);
+        }
+
         // GUI Rendering (We have to render it after the framebuffer has been drawn, otherwise the GUI will not be visible)
         gui.NewFrame();
 
-        // Camera Distortion Parameters retrieval from GUI
-        gameState.preProcessingDistortion = gui.DistortionModeSwitch();
-        auto distortionParams = gui.DistortionSlider();
-        camera.setRadialDistortionParams(distortionParams.first);
-        camera.setTangentialDistortionParams(distortionParams.second);
+        // Camera Distortion Parameters retrieval from GUI (disabled when the dataset generation process is active)
+        if (!gameState.datasetGenProcedure) {
+            gameState.preProcessingDistortion = gui.DistortionModeSwitch();
+            auto distortionParams = gui.DistortionSlider();
+            camera.SetRadialDistortionParams(distortionParams.first);
+            camera.SetTangentialDistortionParams(distortionParams.second);
+        }
 
+        // Switch to Dataset Generation Process
+        gameState.datasetGenProcedure = gui.DatasetGenProcessSwitch();
+
+        // GUI Rendering
         gui.Render();
         gui.DisableMouse(camera);
 

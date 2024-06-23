@@ -6,6 +6,7 @@
 
 typedef struct gameState {
     bool preProcessingDistortion = true; // TRUE to enable preprocessing distortion FALSE to enable postprocessing distortion
+    bool datasetGenProcedure = false;
 } GameState;
 
 GameState gameState;

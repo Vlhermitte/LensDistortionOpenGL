@@ -51,12 +51,12 @@ public:
     void RenderTangentialDistortion(Shader& shader);
 
     // Setter
-    void setRadialDistortionParams(glm::vec3 distortionParams);
-    void setTangentialDistortionParams(glm::vec2 distortionParams);
+    void SetRadialDistortionParams(glm::vec3 distortionParams);
+    void SetTangentialDistortionParams(glm::vec2 distortionParams);
 
     // Getter
-    glm::vec3 getRadialDistortionParams();
-    glm::vec2 getTangentialDistortionParams();
+    glm::vec3 GetRadialDistortionParams();
+    glm::vec2 GetTangentialDistortionParams();
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix();
     bool IsWireframeMode();
@@ -65,6 +65,7 @@ public:
     void Inputs(GLFWwindow* window);
     void EnableMouse();
     void DisableMouse();
+    void GenerateDataset(GLFWwindow* window);
 };
 
 

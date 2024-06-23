@@ -85,4 +85,23 @@ std::pair<glm::vec3, glm::vec2> GUI::DistortionSlider() {
     return std::make_pair(radialDistortionParams, tangentialDistortionParams);
 }
 
+bool GUI::DatasetGenProcessSwitch() {
+    // Set the next window size
+    ImGui::Begin("Dataset Generation Process");
+
+    ImVec2 windowSize = ImVec2(100, 200);
+    ImGui::SetNextWindowSize(windowSize, ImGuiCond_FirstUseEver);
+
+    static bool datasetGenProcess = false;
+    ImGui::Checkbox("Generate Dataset", &datasetGenProcess);
+
+    if (datasetGenProcess) {
+        ImGui::Text("Generating Dataset...");
+    }
+
+    ImGui::End();
+
+    return datasetGenProcess;
+}
+
 

@@ -26,6 +26,7 @@ public:
 
     bool DistortionModeSwitch();
     std::pair<glm::vec3, glm::vec2> DistortionSlider();
+    bool DatasetGenProcessSwitch();
 };
 
 #endif //LENSDISTORTIONOPENGL_GUI_H

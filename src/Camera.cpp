@@ -40,19 +40,19 @@ void Camera::RenderTangentialDistortion(Shader& shader) {
     shader.Deactivate();
 }
 
-void Camera::setRadialDistortionParams(glm::vec3 distortionParams) {
+void Camera::SetRadialDistortionParams(glm::vec3 distortionParams) {
     this->radialDistortionParams = distortionParams;
 }
 
-void Camera::setTangentialDistortionParams(glm::vec2 distortionParams) {
+void Camera::SetTangentialDistortionParams(glm::vec2 distortionParams) {
     this->tangentialDistortionParams = distortionParams;
 }
 
-glm::vec3 Camera::getRadialDistortionParams() {
+glm::vec3 Camera::GetRadialDistortionParams() {
     return radialDistortionParams;
 }
 
-glm::vec2 Camera::getTangentialDistortionParams() {
+glm::vec2 Camera::GetTangentialDistortionParams() {
     return tangentialDistortionParams;
 }
 
@@ -215,4 +215,48 @@ void Camera::handleKeyboard(GLFWwindow *window) {
         // Takes a screenshot
         TakeScreenshot(window, screenshotName.c_str());
     }
+}
+
+void Camera::GenerateDataset(GLFWwindow *window) {
+    std::string directory = "../Screenshots/Dataset/";
+    // Create directory if it doesn't exist
+    if (!std::filesystem::exists(directory)) {
+        std::filesystem::create_directory(directory);
+    }
+    // Generate random position for the camera x = <-5, 5>, y = <1, 2>, z = <5, 7> (y is up vector)
+    float x = -5.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (5.0f - (-5.0f))));
+    float y = 1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (2.0f - 1.0f)));
+    float z = 5.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (7.0f - 5.0f)));
+
+    // Compute orientation of the camera for it to look at the center of the scene
+    glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 orientation = glm::normalize(center - glm::vec3(x, y, z));
+
+    // Generate random radial distortion parameters (between 0 and 0.1)
+    float k1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 0.1f);
+    float k2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 0.1f);
+    float k3 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 0.1f);
+
+    // Generate random tangential distortion parameters (between 0 and 0.1)
+    float p1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 0.1f);
+    float p2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 0.1f);
+
+    // Generate random FOV (between 30 and 90 degrees)
+    float fov = 30.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (90.0f - 30.0f)));
+
+    // Apply transformation to the camera
+    Position = glm::vec3(x, y, z);
+    Orientation = orientation;
+    radialDistortionParams = glm::vec3(k1, k2, k3);
+    tangentialDistortionParams = glm::vec2(p1, p2);
+
+    // Update camera matrix
+    updateMatrix(fov, 0.1f, 100.0f);
+
+    // Take screenshot
+    auto timestamp = std::chrono::system_clock::now();
+    auto timestamp_c = std::chrono::system_clock::to_time_t(timestamp);
+    auto imageName = directory + std::string("img_") + std::to_string(timestamp_c) + ".png";
+
+    TakeScreenshot(window, imageName.c_str());
 }
