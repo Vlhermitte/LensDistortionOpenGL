@@ -33,8 +33,16 @@ find_package_and_message(GLEW)
 find_package_and_message(GLM)
 find_package_and_message(ASSIMP)
 
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
+if (Python_FOUND)
+    message(STATUS "Found Python in ${Python_INCLUDE_DIRS}")
+else ()
+    message(FATAL_ERROR "Python not found")
+endif ()
+
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 link_directories(${GLFW3_LIBRARY_DIRS} ${GLEW_LIBRARY_DIRS} ${ASSIMP_LIBRARY_DIRS})
+link_directories(${Python_LIBRARY_DIRS})
 
 
 # Find DLLs
@@ -56,6 +64,7 @@ include_directories(
         ${GLEW_INCLUDE_DIRS}
         ${GLM_INCLUDE_DIRS}
         ${ASSIMP_INCLUDE_DIRS}
+        ${Python_INCLUDE_DIRS}
 )
 
 file(GLOB_RECURSE SOURCES
@@ -84,12 +93,12 @@ add_executable(${PROJECT_NAME}
 # Link libraries
 if (WIN32 OR UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME}
-            ${OPENGL_LIBRARIES} ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES}
+            ${OPENGL_LIBRARIES} ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES} ${Python_LIBRARIES}
     )
 elseif (APPLE)
     target_link_libraries(${PROJECT_NAME}
             "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo"
-            ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES}
+            ${GLFW3_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES} ${Python_LIBRARIES}
     )
 endif ()
 

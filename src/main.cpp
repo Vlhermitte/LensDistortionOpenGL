@@ -1,13 +1,42 @@
 #include "main.h"
 #include "GameState.h"
+#include <Python.h>
+
+bool generateTerrain() {
+    // Initialize the Python interpreter
+    Py_Initialize();
+
+    // Define the path to the Python script
+    const char* scriptPath = "../python/main.py";
+    FILE* python_file = fopen(scriptPath, "r");
+
+    if (python_file != nullptr) {
+        // Create the arguments tuple
+        PyObject* args = PyTuple_New(1);
+        PyTuple_SetItem(args, 0, PyUnicode_FromString("../Resources/Models/Floor/terrain.csv"));
+
+        // Set sys.argv for the Python script (PySys_SetArgv is depreceted in Python 3.11)
+        PySys_SetObject("argv", args);
+
+        // Run the Python script
+        PyRun_SimpleFile(python_file, scriptPath);
+
+        // Clean up
+        fclose(python_file);
+        Py_DECREF(args);
+    } else {
+        std::cerr << "Error opening the Python script" << std::endl;
+        return false;
+    }
+
+    // Finalize the Python interpreter
+    Py_Finalize();
+
+    return true;
+}
 
 std::vector<Model> initModels() {
     std::vector<Model> models;
-    // Floor
-    Model floor("../Resources/Models/Floor/Floor.obj");
-    floor.setPosition(glm::vec3(0.0f, -0.25f, 0.0f));
-    floor.setScale(glm::vec3(1.0f, 1.0f, 1.0f));
-    models.emplace_back(floor);
 
     Model Cottage("../Resources/Models/Cottage/Cottage_FREE.obj");
     Cottage.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -32,6 +61,16 @@ std::vector<Model> initModels() {
     sun.setPosition(glm::vec3(8.0f, 8.0f, 8.0f));
     sun.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
     models.emplace_back(sun);
+
+    // Terrain
+    if (!generateTerrain()) {
+        std::cerr << "Error generating the terrain" << std::endl;
+        exit(-1);
+    }
+    Model terrain("../Resources/Models/Floor/terrain.obj");
+    terrain.setPosition(glm::vec3(0.0f, -0.25f, 0.0f));
+    terrain.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+    models.emplace_back(terrain);
 
     return models;
 }
