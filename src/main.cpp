@@ -38,26 +38,26 @@ bool generateTerrain() {
 std::vector<Model> initModels() {
     std::vector<Model> models;
 
-    Model Cottage("../Resources/Models/Cottage/Cottage_FREE.obj");
+    Model Cottage("Cottage", "../Resources/Models/Cottage/Cottage_FREE.obj");
     Cottage.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     Cottage.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(Cottage);
 
-    // RaceCar
-    Model raceCar("../Resources/Models/RaceCar/RaceCar.obj");
-    raceCar.setPosition(glm::vec3(1.5f, 0.0f, 3.2f));
-    raceCar.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
-    raceCar.setRotation(glm::vec3(0.0f, 40.0f, 0.0f));
-    models.emplace_back(raceCar);
-
-    // Cadillac
-    Model cadillac("../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
-    cadillac.setPosition(glm::vec3(-0.8f, 0.0f, 4.0f));
-    cadillac.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
-    models.emplace_back(cadillac);
+//    // RaceCar
+//    Model raceCar("RaceCar", "../Resources/Models/RaceCar/RaceCar.obj");
+//    raceCar.setPosition(glm::vec3(1.5f, 0.0f, 3.2f));
+//    raceCar.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+//    raceCar.setRotation(glm::vec3(0.0f, 40.0f, 0.0f));
+//    models.emplace_back(raceCar);
+//
+//    // Cadillac
+//    Model cadillac("Cadillac", "../Resources/Models/Cadillac/Cadillac_CT4_V_2022.obj");
+//    cadillac.setPosition(glm::vec3(-0.8f, 0.0f, 4.0f));
+//    cadillac.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+//    models.emplace_back(cadillac);
 
     // Sun Model
-    Model sun("../Resources/Models/Sun/Sun.obj");
+    Model sun("Sun", "../Resources/Models/Sun/Sun.obj");
     sun.setPosition(glm::vec3(8.0f, 8.0f, 8.0f));
     sun.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
     models.emplace_back(sun);
@@ -67,8 +67,8 @@ std::vector<Model> initModels() {
         std::cerr << "Error generating the terrain" << std::endl;
         exit(-1);
     }
-    Model terrain("../Resources/Models/Floor/terrain.obj");
-    terrain.setPosition(glm::vec3(0.0f, -0.25f, 0.0f));
+    Model terrain("Terrain", "../Resources/Models/Floor/terrain.obj");
+    terrain.setPosition(glm::vec3(0.0f, -0.1f, 0.0f));
     terrain.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(terrain);
 
@@ -132,15 +132,26 @@ int main(int argc, char** argv) {
     std::vector<Model> models = initModels();
 
     glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    // Sun Position is the last model in the models vector
-    glm::vec3 sunPos = models.back().getPosition();
+    // Find the sun in the models vector to get its position
+    auto it = std::find_if(models.begin(), models.end(), [](const Model& model) {
+        return model.getModelName() == "Sun";
+    });
 
-    defaultShader.Activate();
+    glm::vec3 sunPos;
+    if (it != models.end()) {
+        sunPos = it->getPosition();
+    } else {
+        std::cerr << "Sun not found in the models vector" << std::endl;
+        sunPos = glm::vec3(0.0f, 5.0f, 0.0f);
+    }
+
+
+            defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "useDirectionalLight"), true);
-    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), false);
+    glUniform1i(glGetUniformLocation(defaultShader.ID, "useSpotLight"), true);
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePreProcessDistortion"), gameState.preProcessingDistortion);
     defaultShader.Deactivate();
     CHECK_GL_ERROR();

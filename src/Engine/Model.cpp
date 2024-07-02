@@ -4,7 +4,8 @@
 
 #include "Model.h"
 
-Model::Model(const std::string &path) {
+Model::Model(const std::string& modelName, const std::string &path) {
+    this->modelName = modelName;
     loadModel(path);
 }
 
@@ -18,6 +19,10 @@ void Model::setScale(glm::vec3 scale) {
 
 void Model::setRotation(glm::vec3 rotation) {
     this->rotation = rotation;
+}
+
+std::string Model::getModelName() const {
+    return modelName;
 }
 
 void Model::Draw(Shader shader, Camera camera) {

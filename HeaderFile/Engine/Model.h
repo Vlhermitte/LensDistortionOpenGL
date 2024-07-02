@@ -15,6 +15,7 @@
 class Model {
 private:
     std::vector<Mesh> meshes;
+    std::string modelName;
     std::string directory;
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -26,11 +27,13 @@ private:
     std::vector<Texture> getTextures(const aiMaterial *material, const std::string &filename);
     static Material getMaterials(const aiMaterial *material);
 public:
-    explicit Model(const std::string &path);
+    explicit Model(const std::string& modelName, const std::string &path);
 
     void setPosition(glm::vec3 position);
     void setScale(glm::vec3 scale);
     void setRotation(glm::vec3 rotation);
+
+    std::string getModelName() const;
 
     void Draw(Shader shader, Camera camera);
     void Delete() const;
