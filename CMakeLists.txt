@@ -6,17 +6,33 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # Package Finder Functions
 function(find_package_and_message package)
+    # Convert the package name to upper and lower case for flexibility (linux needs lower case and macOS needs upper case)
+    string(TOUPPER ${package} PACKAGE_UPPER)
+    string(TOLOWER ${package} PACKAGE_LOWER)
+
     find_package(PkgConfig QUIET)
     if (PKG_CONFIG_FOUND)
-        pkg_check_modules(${package} REQUIRED ${package})
-    else ()
-        find_package(${package} REQUIRED)
-    endif ()
-    if (${package}_FOUND)
-        message(STATUS "Found ${package} in ${${package}_INCLUDE_DIRS}")
-    else ()
+        pkg_check_modules(${PACKAGE_LOWER} QUIET ${PACKAGE_LOWER})
+        pkg_check_modules(${PACKAGE_UPPER} QUIET ${PACKAGE_UPPER})
+    endif()
+
+    # Try finding the package using both upper and lower case
+    if (NOT ${PACKAGE_LOWER}_FOUND AND NOT ${PACKAGE_UPPER}_FOUND)
+        find_package(${PACKAGE_LOWER} QUIET)
+        find_package(${PACKAGE_UPPER} QUIET)
+    endif()
+
+    # Check which one was found and set the correct variables
+    if (${PACKAGE_LOWER}_FOUND)
+        set(PACKAGE_FOUND ${PACKAGE_LOWER})
+    elseif(${PACKAGE_UPPER}_FOUND)
+        set(PACKAGE_FOUND ${PACKAGE_UPPER})
+    else()
         message(FATAL_ERROR "${package} not found")
-    endif ()
+    endif()
+
+    # Print the found package
+    message(STATUS "Found ${PACKAGE_FOUND} in ${${PACKAGE_FOUND}_INCLUDE_DIRS}")
 endfunction()
 
 # Find packages
