@@ -36,36 +36,6 @@ install_mac_dependencies() {
     pip3 install numpy pandas scipy
 }
 
-install_windows_dependencies() {
-    echo "Windows detected - Installing dependencies"
-    # Check if choco is installed
-    if ! [ -x "$(command -v choco)" ]; then
-        echo "Chocolatey is not installed. Would you like to install it? (y/n)"
-        read -r response
-        if [[ "$response" =~ ^([yY])$ ]]; then
-            # Install Chocolatey
-            powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-        else
-            echo "Exiting"
-            exit 1
-        fi
-    fi
-
-    # Install dependencies using choco
-    choco install cmake -y
-    choco install make -y
-    choco install glfw -y
-    choco install glm -y
-    choco install glew -y
-    choco install assimp -y
-
-    # Python
-    choco install python3 -y
-    python3 -m venv env
-    source env/Scripts/activate
-    pip3 install numpy pandas scipy
-}
-
 # Determine OS and install accordingly
 OS_TYPE=$(uname -s)
 case "$OS_TYPE" in
@@ -76,7 +46,7 @@ case "$OS_TYPE" in
         install_mac_dependencies
         ;;
     MINGW64_NT*|MSYS_NT*|CYGWIN_NT*)
-        install_windows_dependencies
+        echo "Windows detected - You need to install GLFW, GLM, GLEW, and ASSIMP manually"
         ;;
     *)
         echo "Unknown OS detected - Exiting"
