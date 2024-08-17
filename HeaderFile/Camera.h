@@ -65,7 +65,7 @@ public:
     void Inputs(GLFWwindow* window);
     void EnableMouse();
     void DisableMouse();
-    void GenerateDataset(GLFWwindow* window);
+    void GenerateDataset(GLFWwindow* window, bool pinholeCamera);
 };
 
 

@@ -217,7 +217,7 @@ void Camera::handleKeyboard(GLFWwindow *window) {
     }
 }
 
-void Camera::GenerateDataset(GLFWwindow *window) {
+void Camera::GenerateDataset(GLFWwindow *window, bool pinholeCamera=false) {
     std::string directory = "../Screenshots/Dataset/";
     // Create directory if it doesn't exist
     if (!std::filesystem::exists(directory)) {
@@ -247,9 +247,10 @@ void Camera::GenerateDataset(GLFWwindow *window) {
     // Apply transformation to the camera
     Position = glm::vec3(x, y, z);
     Orientation = orientation;
-    radialDistortionParams = glm::vec3(k1, k2, k3);
-    tangentialDistortionParams = glm::vec2(p1, p2);
-
+    if (!pinholeCamera) {
+        radialDistortionParams = glm::vec3(k1, k2, k3);
+        tangentialDistortionParams = glm::vec2(p1, p2);
+    }
     // Update camera matrix
     updateMatrix(fov, 0.1f, 100.0f);
 

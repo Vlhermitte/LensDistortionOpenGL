@@ -258,7 +258,7 @@ int main(int argc, char** argv) {
 
         // Dataset Generation (this has to be put here to avoid having the GUI in the images)
         if (gameState.datasetGenProcedure) {
-            camera.GenerateDataset(window);
+            camera.GenerateDataset(window, true);
         }
 
         // GUI Rendering (We have to render it after the framebuffer has been drawn, otherwise the GUI will not be visible)
