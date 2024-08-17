@@ -1,48 +1,67 @@
 #!/usr/bin/env bash
 
-# bash script to install the necessary dependencies for the project
-
-# windows
-if (uname -a | grep -q "MINGW64_NT"); then
-    echo "Windows detected - Nothing to do"
-fi # end windows
-
-# linux
-if (uname -a | grep -q "Linux"); then
+install_linux_dependencies() {
     echo "Linux detected - Installing dependencies"
-    # install GLFW3
-    sudo apt-get install libglfw3-dev
-    # install GLM
-    sudo apt-get install libglm-dev
-    # install GLEW
-    sudo apt-get install libglew-dev
-    # install GL
-    sudo apt-get install libgl-dev
-    # install Assimp
-    sudo apt-get install libassimp-dev
-fi # end linux
+    sudo apt update
+    sudo apt install -y cmake make pkg-config libglfw3-dev libglm-dev libglew-dev libgl-dev libassimp-dev
+}
 
-# mac
-if (uname -a | grep -q "Darwin"); then
+install_mac_dependencies() {
     echo "Mac detected - Installing dependencies"
-    # check if brew is installed
     if ! [ -x "$(command -v brew)" ]; then
         echo "Error: brew is not installed. Would you like to install it? (y/n)"
         read -r response
-        # if y or Y
         if [[ "$response" =~ ^([yY])$ ]]; then
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            # Add Homebrew to the PATH if necessary
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+            eval "$(/opt/homebrew/bin/brew shellenv)"
         else
             echo "Exiting"
             exit 1
         fi
     fi
-    # install GLFW3
-    brew install glfw
-    # install GLM
-    brew install glm
-    # install GLEW
-    brew install glew
-    # install Assimp
-    brew install assimp
-fi # end mac
+    brew install glfw glm glew assimp
+}
+
+install_windows_dependencies() {
+    echo "Windows detected - Installing dependencies"
+    # Check if choco is installed
+    if ! [ -x "$(command -v choco)" ]; then
+        echo "Chocolatey is not installed. Would you like to install it? (y/n)"
+        read -r response
+        if [[ "$response" =~ ^([yY])$ ]]; then
+            # Install Chocolatey
+            powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+        else
+            echo "Exiting"
+            exit 1
+        fi
+    fi
+
+    # Install dependencies using choco
+    choco install cmake -y
+    choco install make -y
+    choco install glfw -y
+    choco install glm -y
+    choco install glew -y
+    choco install assimp -y
+}
+
+# Determine OS and install accordingly
+OS_TYPE=$(uname -s)
+case "$OS_TYPE" in
+    Linux*)
+        install_linux_dependencies
+        ;;
+    Darwin*)
+        install_mac_dependencies
+        ;;
+    MINGW64_NT*|MSYS_NT*|CYGWIN_NT*)
+        install_windows_dependencies
+        ;;
+    *)
+        echo "Unknown OS detected - Exiting"
+        exit 1
+        ;;
+esac
