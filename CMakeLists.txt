@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # Package Finder Functions
 function(find_package_and_message package)
-    find_package(PkgConfig REQUIRED)
+    find_package(PkgConfig QUIET)
     if (PKG_CONFIG_FOUND)
         pkg_check_modules(${package} REQUIRED ${package})
     else ()
@@ -28,10 +28,10 @@ else ()
     message(FATAL_ERROR "OpenGL not found")
 endif ()
 
-find_package_and_message(GLFW3)
-find_package_and_message(GLEW)
-find_package_and_message(GLM)
-find_package_and_message(ASSIMP)
+find_package_and_message(glfw3)
+find_package_and_message(glew)
+find_package_and_message(glm)
+find_package_and_message(assimp)
 
 find_package(Python REQUIRED COMPONENTS Interpreter Development)
 if (Python_FOUND)
