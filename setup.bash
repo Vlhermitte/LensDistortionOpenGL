@@ -7,10 +7,8 @@ install_linux_dependencies() {
 
     # Python
     sudo apt install -y python3 python3-pip python3-venv
-    # Python env
     python3 -m venv env
     source env/bin/activate
-    # Python packages
     pip3 install numpy pandas scipy
 }
 
@@ -30,6 +28,12 @@ install_mac_dependencies() {
         fi
     fi
     brew install glfw glm glew assimp
+
+    # Python
+    brew install python3
+    python3 -m venv env
+    source env/bin/activate
+    pip3 install numpy pandas scipy
 }
 
 install_windows_dependencies() {
@@ -54,6 +58,12 @@ install_windows_dependencies() {
     choco install glm -y
     choco install glew -y
     choco install assimp -y
+
+    # Python
+    choco install python3 -y
+    python3 -m venv env
+    source env/Scripts/activate
+    pip3 install numpy pandas scipy
 }
 
 # Determine OS and install accordingly
