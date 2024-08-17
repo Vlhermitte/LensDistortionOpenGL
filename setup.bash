@@ -4,6 +4,14 @@ install_linux_dependencies() {
     echo "Linux detected - Installing dependencies"
     sudo apt update
     sudo apt install -y cmake make pkg-config libglfw3-dev libglm-dev libglew-dev libgl-dev libassimp-dev
+
+    # Python
+    sudo apt install -y python3 python3-pip python3-venv
+    # Python env
+    python3 -m venv env
+    source env/bin/activate
+    # Python packages
+    pip3 install numpy pandas scipy
 }
 
 install_mac_dependencies() {
