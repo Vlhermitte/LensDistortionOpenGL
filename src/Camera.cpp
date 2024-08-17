@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Model.h"
+#include <filesystem>
 
 Camera::Camera(int width, int height, glm::vec3 position) {
     Position = position;
