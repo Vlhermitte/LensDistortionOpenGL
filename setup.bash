@@ -64,7 +64,7 @@ install_windows_dependencies() {
         "$LOCAL_CHOCOLATEY_PATH/choco.exe" install assimp -y
 
     # Python
-    ""$LOCAL_CHOCOLATEY_PATH/choco.exe"" install python3 -y
+    "$LOCAL_CHOCOLATEY_PATH/choco.exe" install python3 -y
     python3 -m venv env
     source env/Scripts/activate
     pip3 install numpy pandas scipy
