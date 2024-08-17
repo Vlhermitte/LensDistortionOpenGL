@@ -38,6 +38,11 @@ install_mac_dependencies() {
 
 install_windows_dependencies() {
     echo "Windows detected - Installing dependencies"
+    # Check if running as admin
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run as administrator"
+        exit 1
+    fi
     # Check if choco is installed
     if ! [ -x "$(command -v choco)" ]; then
         echo "Chocolatey is not installed. Would you like to install it? (y/n)"
