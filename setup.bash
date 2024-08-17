@@ -38,29 +38,33 @@ install_mac_dependencies() {
 
 install_windows_dependencies() {
     echo "Windows detected - Installing dependencies"
-    # Check if choco is installed
-    if ! [ -x "$(command -v choco)" ]; then
-        echo "Chocolatey is not installed. Would you like to install it? (y/n)"
-        read -r response
-        if [[ "$response" =~ ^([yY])$ ]]; then
-            # Install Chocolatey
-            powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-        else
-            echo "Exiting"
-            exit 1
-        fi
-    fi
+        # Define the local installation path for Chocolatey
+        LOCAL_CHOCOLATEY_PATH="$HOME/choco-local/bin"
 
-    # Install dependencies using choco
-    choco install cmake -y
-    choco install make -y
-    choco install glfw -y
-    choco install glm -y
-    choco install glew -y
-    choco install assimp -y
+        # Check if choco is installed locally
+        if ! [ -x "$LOCAL_CHOCOLATEY_PATH/choco.exe" ]; then
+            echo "Chocolatey is not installed. Installing locally..."
+
+            # Create a local bin directory if it doesn't exist
+            mkdir -p "$LOCAL_CHOCOLATEY_PATH"
+
+            # Download and install Chocolatey in the local directory
+            powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')); Install-Chocolatey.ps1 -InstallDir '$LOCAL_CHOCOLATEY_PATH'"
+
+            # Ensure the local Chocolatey path is in the PATH
+            export PATH="$LOCAL_CHOCOLATEY_PATH:$PATH"
+        fi
+
+        # Use local Chocolatey to install dependencies
+        "$LOCAL_CHOCOLATEY_PATH/choco.exe" install cmake --version=3.27 -y
+        "$LOCAL_CHOCOLATEY_PATH/choco.exe" install make -y
+        "$LOCAL_CHOCOLATEY_PATH/choco.exe" install glfw -y
+        "$LOCAL_CHOCOLATEY_PATH/choco.exe" install glm -y
+        "$LOCAL_CHOCOLATEY_PATH/choco.exe" install glew -y
+        "$LOCAL_CHOCOLATEY_PATH/choco.exe" install assimp -y
 
     # Python
-    choco install python3 -y
+    $LOCAL_CHOCOLATEY_PATH/choco.exe install python3 -y
     python3 -m venv env
     source env/Scripts/activate
     pip3 install numpy pandas scipy
