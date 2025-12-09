@@ -26,7 +26,13 @@ out vec4 fragPosLightSpace;
 
 vec2 RadialDistortion(vec2 coord, float k1, float k2, float k3) {
     float r = length(coord);
-    float distortionFactor = 1.0 + k1 * pow(r, 2) + k2 * pow(r, 4) + k3 * pow(r, 6);
+
+    // Apply a threshold to avoid instability with large distortions
+    r = min(r, 1.5);
+
+    // Calculate distortion factor with clamping for stability
+    float distortionFactor = max(0.1, 1.0 + k1 * pow(r, 2) + k2 * pow(r, 4) + k3 * pow(r, 6));
+
     return distortionFactor * coord;
 }
 
@@ -34,49 +40,53 @@ vec2 TangentialDistortion(vec2 coord, float p1, float p2) {
     float x = coord.x;
     float y = coord.y;
     float r2 = x * x + y * y;
+
+    // Threshold radius to avoid instability
+    r2 = min(r2, 2.0);
+
+    // Calculate tangential distortion offsets
     float dx = 2.0 * p1 * x * y + p2 * (r2 + 2.0 * x * x);
     float dy = p1 * (r2 + 2.0 * y * y) + 2.0 * p2 * x * y;
+
+    // Optional scaling to moderate distortion strength
+    float scale = 1.0 / (1.0 + r2); // Falloff with radius
+    dx *= scale;
+    dy *= scale;
+
+    // Clamp to avoid excessive distortion
+    dx = clamp(dx, -1.0, 1.0);
+    dy = clamp(dy, -1.0, 1.0);
+
     return vec2(dx, dy);
 }
 
 void main() {
+    vec4 worldPosition = modelMatrix * vec4(aPos, 1.0); // Position in world coordinates
+    vec4 clipPosition = camMatrix * worldPosition;      // Projected position (clip space)
 
     if (usePreProcessDistortion) {
-        // Apply distortion on the vertex position
-        // 1. Apply model matrix to get the world space position
-        vec4 worldSpacePos = modelMatrix * vec4(aPos, 1.0);
-        // 2. Apply view matrix to get the view space position
-        vec4 viewSpacePos = viewMatrix * worldSpacePos;
-        // 3. Apply projection matrix to get the clip space position
-        vec4 clipSpacePos = projectionMatrix * viewSpacePos;
-        // 4. Perspective division to get normalized device coordinates
-        vec2 ndcPos = clipSpacePos.xy / clipSpacePos.w;
-        // 5. Apply radial distortion to the normalized device coordinates
-        vec2 radialDistortionCoords = RadialDistortion(ndcPos, radialDistortionParams.x, radialDistortionParams.y, radialDistortionParams.z);
-        vec2 tangentialDistortionCoords = TangentialDistortion(ndcPos, tangentialDistortionParams.x, tangentialDistortionParams.y);
-        vec2 distortedPos = radialDistortionCoords + tangentialDistortionCoords;
-        // 6. Convert back to clip space
-        vec4 clipSpaceDistortedPos = vec4(distortedPos * clipSpacePos.w, clipSpacePos.z, clipSpacePos.w);
-        // 7. Convert back to view space
-        vec4 viewSpaceDistortedPos = inverse(projectionMatrix) * clipSpaceDistortedPos;
-        // 8. Convert back to world space
-        vec4 worldSpaceDistortedPos = inverse(viewMatrix) * viewSpaceDistortedPos;
-        // Set the position to the distorted world space position
-        position = worldSpaceDistortedPos.xyz;
-        gl_Position = clipSpaceDistortedPos;
-    } else {
-        position = vec3(modelMatrix * vec4(aPos, 1.0));
-        gl_Position = camMatrix * vec4(position, 1.0);
+        // Transform clip space coordinates to normalized device coordinates (NDC)
+        vec3 ndc = clipPosition.xyz / clipPosition.w;  // Divide by w to get NDC (perspective division)
+
+        // Apply radial and tangential distortion
+        vec2 distortedCoord = RadialDistortion(ndc.xy, radialDistortionParams.x, radialDistortionParams.y, radialDistortionParams.z);
+        distortedCoord += TangentialDistortion(ndc.xy, tangentialDistortionParams.x, tangentialDistortionParams.y);
+
+        // Reconstruct distorted clip space position
+        clipPosition.xy = distortedCoord * clipPosition.w;
     }
 
-    color = aColor;
-    texCoord = aTexCoord;
-    normal = normalize(vec3(normalMatrix * vec4(aNormal, 0.0)));
+    position = vec3(worldPosition);                  // Output world position
+    gl_Position = clipPosition;                     // Update the final vertex position
 
-    // reflect vector
-    vec3 viewVector = normalize(position - camPos);
-    reflectedVector = reflect(viewVector, normal);
+    color = aColor;                                 // Pass vertex color
+    texCoord = aTexCoord;                           // Pass texture coordinate
+    normal = normalize(vec3(normalMatrix * vec4(aNormal, 0.0))); // Transform and normalize normal vector
 
-    // light space matrix
+    // Calculate reflected vector
+    vec3 viewVector = normalize(position - camPos); // View vector
+    reflectedVector = reflect(viewVector, normal);  // Reflected vector
+
+    // Transform to light space for shadow mapping
     fragPosLightSpace = lightSpaceMatrix * vec4(position, 1.0);
 }

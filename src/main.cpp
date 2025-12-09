@@ -39,9 +39,14 @@ std::vector<Model> initModels() {
     std::vector<Model> models;
 
     Model Cottage("Cottage", "../Resources/Models/Cottage/Cottage_FREE.obj");
-    Cottage.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    Cottage.setPosition(glm::vec3(10.0f, 0.0f, 0.0f));
     Cottage.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(Cottage);
+
+    // Model Gryffindor("Gryffindor", "../Resources/Models/gryffindor_common_room/obj/scene.obj");
+    // Gryffindor.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    // Gryffindor.setScale(glm::vec3(20.0f, 20.0f, 20.0f));
+    // models.emplace_back(Gryffindor);
 
 //    // RaceCar
 //    Model raceCar("RaceCar", "../Resources/Models/RaceCar/RaceCar.obj");
@@ -58,16 +63,16 @@ std::vector<Model> initModels() {
 
     // Sun Model
     Model sun("Sun", "../Resources/Models/Sun/Sun.obj");
-    sun.setPosition(glm::vec3(8.0f, 8.0f, 8.0f));
+    sun.setPosition(glm::vec3(8.0f, 10.0f, 10.0f));
     sun.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
     models.emplace_back(sun);
 
     // Terrain
-    if (!generateTerrain()) {
-        std::cerr << "Error generating the terrain" << std::endl;
-        exit(-1);
-    }
-    Model terrain("Terrain", "../Resources/Models/Floor/terrain.obj");
+    // if (!generateTerrain()) {
+    //     std::cerr << "Error generating the terrain" << std::endl;
+    //     exit(-1);
+    // }
+    Model terrain("Terrain", "../Resources/Models/Floor/floor.obj");
     terrain.setPosition(glm::vec3(0.0f, -0.1f, 0.0f));
     terrain.setScale(glm::vec3(0.3f, 0.3f, 0.3f));
     models.emplace_back(terrain);
@@ -131,7 +136,7 @@ int main(int argc, char** argv) {
     // Models
     std::vector<Model> models = initModels();
 
-    glm::vec4 sunColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec4 sunColor = glm::vec4(1.0f, 0.95f, 0.9f, 1.0f);
     // Find the sun in the models vector to get its position
     auto it = std::find_if(models.begin(), models.end(), [](const Model& model) {
         return model.getModelName() == "Sun";
@@ -146,7 +151,7 @@ int main(int argc, char** argv) {
     }
 
 
-            defaultShader.Activate();
+    defaultShader.Activate();
     glUniform3fv(glGetUniformLocation(defaultShader.ID, "lightPos"), 1, glm::value_ptr(sunPos));
     glUniform4fv(glGetUniformLocation(defaultShader.ID, "lightColor"), 1, glm::value_ptr(sunColor));
     glUniform1i(glGetUniformLocation(defaultShader.ID, "usePointLight"), true);
@@ -162,12 +167,13 @@ int main(int argc, char** argv) {
     CHECK_GL_ERROR();
 
     // Camera
-    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 1.0f, 5.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
+    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 1.0f, 0.0f)); // Positive Z result in a backward movement because the camera is looking at the negative Z axis
 
     // Time
     float previousTime = 0.0f;
     float currentTime = 0.0f;
     float deltaTime = 0.0f;
+    float lastInputTime = 0.0f;
     unsigned int framesCounter = 0;
     int windowWidth, windowHeight;
     glfwGetFramebufferSize(window, &windowWidth, &windowHeight); // We need to get the framebuffer size in case of retina displays
@@ -201,7 +207,12 @@ int main(int argc, char** argv) {
         }
         if (deltaTime >= 1.0f / 30.0f) {
             // Putting the Inputs handling here, to avoid inputs depending on the frame rate
-            camera.Inputs(window);
+            camera.handleMovement(window);
+            camera.handleMouse(window);
+            if (currentTime - lastInputTime >= 0.05f) {
+                camera.Inputs(window);
+                lastInputTime = currentTime;
+            }
         }
 
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -216,7 +227,7 @@ int main(int argc, char** argv) {
             camera.RenderTangentialDistortion(postProcessShader);
         }
 
-        camera.updateMatrix(60.0f, 0.1f, 100.0f);
+        camera.updateMatrix(75.0f, 0.1f, 100.0f);
 
         // Draw the models to the shadow map
         shadowMap.ActivateShadows(shadowMapShader, sunPos);
@@ -262,10 +273,12 @@ int main(int argc, char** argv) {
         }
 
         // GUI Rendering (We have to render it after the framebuffer has been drawn, otherwise the GUI will not be visible)
-        gui.NewFrame();
+        if (camera.IsGuiMode()) {
+            gui.NewFrame();
+        }
 
         // Camera Distortion Parameters retrieval from GUI (disabled when the dataset generation process is active)
-        if (!gameState.datasetGenProcedure) {
+        if (!gameState.datasetGenProcedure && camera.IsGuiMode()) {
             gameState.preProcessingDistortion = gui.DistortionModeSwitch();
             auto distortionParams = gui.DistortionSlider();
             camera.SetRadialDistortionParams(distortionParams.first);
@@ -273,11 +286,16 @@ int main(int argc, char** argv) {
         }
 
         // Switch to Dataset Generation Process
-        gameState.datasetGenProcedure = gui.DatasetGenProcessSwitch();
+        if (camera.IsGuiMode()) {
+            gameState.numImages = gui.NumberOfImages();
+            gameState.datasetGenProcedure = gui.DatasetGenProcessSwitch();
+        }
 
         // GUI Rendering
-        gui.Render();
-        gui.DisableMouse(camera);
+        if (camera.IsGuiMode()) {
+            gui.Render();
+            gui.DisableMouse(camera);
+        }
 
         if (camera.IsWireframeMode()) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // Go back to camera wireframe mode

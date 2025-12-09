@@ -31,7 +31,7 @@ private:
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
-    Material material;
+    Material material{};
     VAO meshVAO;
 public:
 

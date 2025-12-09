@@ -69,6 +69,10 @@ bool Camera::IsWireframeMode() {
     return wireframeMode;
 }
 
+bool Camera::IsGuiMode() {
+    return guiMode;
+}
+
 void Camera::TakeScreenshot(GLFWwindow *window, const char* filename) {
     int windowsWidth, windowHeight;
     glfwGetFramebufferSize(window, &windowsWidth, &windowHeight);
@@ -84,8 +88,6 @@ void Camera::TakeScreenshot(GLFWwindow *window, const char* filename) {
 }
 
 void Camera::Inputs(GLFWwindow *window) {
-    handleMovement(window);
-    handleMouse(window);
     handleKeyboard(window);
 }
 
@@ -174,6 +176,15 @@ void Camera::handleKeyboard(GLFWwindow *window) {
     // Escape button
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+
+    // GUI mode
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+        if (!guiMode) {
+            guiMode = true;
+        } else {
+            guiMode = false;
+        }
     }
 
     // Wireframe mode

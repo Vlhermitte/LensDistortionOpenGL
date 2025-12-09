@@ -55,8 +55,8 @@ Light pointLight() {
     float b = 0.064f;
     float attenuation = 1.0f / (1.0f + a * distance + b * pow(distance, 2)); // quadratic attenuation formula
 
-    // lighting
-    float ambient = 0.05f;
+    // lighting (intensity of the general light in the scene, not from the sun)
+    float ambient = 0.25f;
 
     // diffuse lighting
     // vec3 normalMap = 2.0 * texture(normal0, texCoord).xyz - 1.0;

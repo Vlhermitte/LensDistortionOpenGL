@@ -38,9 +38,8 @@ private:
     float sensitivity = 100.0f;
     bool wireframeMode = false;
     bool mouseEnabled = true;
+    bool guiMode = true;
 
-    void handleMovement(GLFWwindow* window);
-    void handleMouse(GLFWwindow* window);
     void handleKeyboard(GLFWwindow* window);
 public:
     glm::vec3 Position{};
@@ -60,7 +59,10 @@ public:
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix();
     bool IsWireframeMode();
+    bool IsGuiMode();
 
+    void handleMovement(GLFWwindow* window);
+    void handleMouse(GLFWwindow* window);
     void TakeScreenshot(GLFWwindow *window, const char* filename);
     void Inputs(GLFWwindow* window);
     void EnableMouse();

@@ -73,12 +73,12 @@ std::pair<glm::vec3, glm::vec2> GUI::DistortionSlider() {
         distortionMode = false;
     }
 
-    ImGui::SliderFloat("k1", &radialDistortionParams.x, -0.4f, 0.4f);
-    ImGui::SliderFloat("k2", &radialDistortionParams.y, -0.4f, 0.4f);
-    ImGui::SliderFloat("k3", &radialDistortionParams.z, -0.4f, 0.4f);
+    ImGui::SliderFloat("k1", &radialDistortionParams.x, -0.2f, 0.2f);
+    ImGui::SliderFloat("k2", &radialDistortionParams.y, -0.2f, 0.2f);
+    ImGui::SliderFloat("k3", &radialDistortionParams.z, -0.2f, 0.2f);
 
-    ImGui::SliderFloat("p1", &tangentialDistortionParams.x, -0.4f, 0.4f);
-    ImGui::SliderFloat("p2", &tangentialDistortionParams.y, -0.4f, 0.4f);
+    ImGui::SliderFloat("p1", &tangentialDistortionParams.x, -0.2f, 0.2f);
+    ImGui::SliderFloat("p2", &tangentialDistortionParams.y, -0.2f, 0.2f);
 
     ImGui::End();
 
@@ -102,6 +102,22 @@ bool GUI::DatasetGenProcessSwitch() {
     ImGui::End();
 
     return datasetGenProcess;
+}
+
+// Add a text box for the number of images to be generated
+int GUI::NumberOfImages() {
+    // Set the next window size
+    ImGui::Begin("Dataset Generation Process");
+
+    ImVec2 windowSize = ImVec2(100, 200);
+    ImGui::SetNextWindowSize(windowSize, ImGuiCond_FirstUseEver);
+
+    static int numImages = 0;
+    ImGui::InputInt("Number of Images", &numImages);
+
+    ImGui::End();
+
+    return numImages;
 }
 
 

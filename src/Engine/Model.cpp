@@ -228,7 +228,7 @@ Material Model::getMaterials(const aiMaterial *material) {
     if (AI_SUCCESS == material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness))
         mat.roughness = roughness;
     else
-        mat.roughness = 0.5f; // Default value
+        mat.roughness = 0.0f; // Default value
 
     mat.useTexture = false;
     return mat;

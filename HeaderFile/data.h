@@ -10,9 +10,9 @@
 #include <GL/glew.h>
 #include <string>
 
-// Window dimensions
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+// Window dimensions (1080p)
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 // Skybox vertices
 Vertex skyboxVertices[] = {
